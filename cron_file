@@ -1,0 +1,3 @@
+25 8 * * * /usr/local/bin/python3 /code/src/parser_demon.py
+35 8 * * * /usr/local/bin/python3 /code/src/admin_bot_broadcast.py
+* * * * * /usr/local/bin/python3 /code/src/test_cron.py 2>&1

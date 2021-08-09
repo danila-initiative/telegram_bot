@@ -1,20 +1,17 @@
-from typing import NamedTuple
 from datetime import datetime, timedelta
-from dateutil import tz
-from dateutil.zoneinfo import get_zonefile_instance
+from typing import NamedTuple
 
-PUBLISH_DELTA = -1
-CLOSE_DELTA = 5
-TIME_ZONE = "Europe/Moscow"
+from dateutil import tz
+
+import consts
 
 
 class RequestDates(NamedTuple):
     publish_date: str
     close_date: str
 
-
-def GetRequestDates(publish_delta=PUBLISH_DELTA,
-                            close_delta=CLOSE_DELTA) -> RequestDates:
+def GetRequestDates(publish_delta=consts.PUBLISH_DELTA,
+                    close_delta=consts.CLOSE_DELTA) -> RequestDates:
 
     today = GetCurrentDate()
 
@@ -28,11 +25,11 @@ def GetRequestDates(publish_delta=PUBLISH_DELTA,
     while not IsWorkDayToday(close_day):
         close_day = close_day + timedelta(days=1)
 
-    return RequestDates(publish_date=FormatDate(pub_day),
-                        close_date=FormatDate(close_day))
+    return RequestDates(publish_date=FormatDateForURL(pub_day),
+                        close_date=FormatDateForURL(close_day))
 
 
-def GetCurrentDate(time_zone=TIME_ZONE) -> datetime:
+def GetCurrentDate(time_zone=consts.TIME_ZONE) -> datetime:
     # example: 2021-07-09 19:20:22.657220+03:00
 
     current_tz = tz.gettz(time_zone)
@@ -40,7 +37,12 @@ def GetCurrentDate(time_zone=TIME_ZONE) -> datetime:
 
 
 def FormatDate(current_date: datetime):
-    # example: 09.07.2021
+    # example: 2021-08-08
+
+    return current_date.date().strftime("%Y-%m-%d")
+
+def FormatDateForURL(current_date: datetime):
+    # example: 06.08.2021
 
     return current_date.date().strftime("%d.%m.%Y")
 
@@ -54,12 +56,6 @@ def IsWorkDayToday(date: datetime) -> bool:
 
 
 if __name__ == "__main__":
-    print("GetCurrentDate: ", GetCurrentDate())
-    print("FormatDate: ", FormatDate(GetCurrentDate()))
-
+    pass
     # Список названий всех таймзон
-    zonenames = list(get_zonefile_instance().zones)
-
-    request_dates = GetRequestDates()
-    print("Publish date: ", request_dates.publish_date)
-    print("Close date: ", request_dates.close_date)
+    # zonenames = list(get_zonefile_instance().zones)

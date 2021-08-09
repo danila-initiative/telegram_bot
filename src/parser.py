@@ -1,17 +1,13 @@
+import re
+import pandas as pd
 import requests
+from bs4 import BeautifulSoup as BS
+from loguru import logger
 from pandas.core.frame import DataFrame
 from requests import Response
-from bs4 import BeautifulSoup as BS
-import pandas as pd
-from dates import GetCurrentDate, GetRequestDates
 
-RESULT_FOLDER = "results"
-BASE_URL = "https://zakupki.gov.ru/epz/order/extendedsearch/results.html?"
-CUSTOMER_PLACES = {
-    'Москва': 5277335,
-    'ЦФО': 5277317,
-    'Московская область': 5277327
-}
+import consts
+
 
 def RequestFormation(key_word: str,
                      min_price: int,
@@ -19,11 +15,15 @@ def RequestFormation(key_word: str,
                      publish_date: str,
                      location: str,
                      close_date = None) -> str:
-    url = BASE_URL
-    location_id = CUSTOMER_PLACES[location]
+
+    location_id = consts.CUSTOMER_PLACES[location]
+
+    search_string = re.sub(" +", " ", key_word)
+    search_string = search_string.strip()
+    search_string = "+".join(search_string.split(" "))
 
     params = [
-        ("searchString", key_word),
+        ("searchString", search_string),
         ("morphology", "on"),
         ("search-filter", "Дате+размещения"),
         ("pageNumber", "1"),
@@ -47,7 +47,7 @@ def RequestFormation(key_word: str,
 
     params_combined = "&".join(map(lambda x: x[0]+"="+x[1], params))
 
-    return url + params_combined
+    return consts.BASE_URL + params_combined
 
 def GetPageByURL(url: str) -> Response:
     page = requests.get(url, headers={'User-Agent': 'Custom'})
@@ -77,9 +77,28 @@ def ParseResultPage(page: Response, key_word: str) -> DataFrame:
     records = soup.find_all("div", class_="search-registry-entry-block box-shadow-search-input")
     for i in records:
         subject = i.find("div", class_="registry-entry__body-value").text.strip()
+        subject_lower = subject.lower()
         
-        if key_word not in subject: 
-            continue
+        key_words = key_word.lower().split(" ")
+
+# Доп фильтрация полученных результатов по полю "Объект закупок"
+        if len(key_words) < 3:    
+            key_words_in_subject = True
+            for k in range(len(key_words)):
+                tmp_word = ""
+                for j in key_words[k]:
+                    if j.isalpha():
+                        tmp_word += j
+                key_words[k] = tmp_word
+                
+            for word in key_words:
+                if word not in subject_lower:
+                    key_words_in_subject = False
+
+            if not key_words_in_subject:
+                logger.warning(f"Key word \"{key_word}\" not in subject \"{subject}\"")
+                continue
+
 
         results["Объект закупки"].append(subject)
 

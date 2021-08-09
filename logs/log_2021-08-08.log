@@ -1,0 +1,84 @@
+2021-08-08T09:06:07.097231+0300 INFO =====Скрипт parser_demon.py запустился=====
+2021-08-08T09:06:08.926919+0300 INFO id: 1379385024, key word: энергосервис, location: Центральный ФО
+2021-08-08T09:06:08.929863+0300 INFO url: https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=энергосервис&morphology=on&search-filter=Дате+размещения&pageNumber=1&sortDirection=false&recordsPerPage=_20&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&fz223=on&ppRf615=on&af=on&priceFromGeneral=5000000&priceToGeneral=2500000000&currencyIdGeneral=-1&publishDateFrom=06.08.2021&customerPlace=5277317
+2021-08-08T09:06:09.493321+0300 INFO ../results/2021-08-08/1379385024_1_энергосервис_Центральный ФО.xlsx
+2021-08-08T09:06:19.559099+0300 INFO id: 1379385024, key word: эскалатор, location: Центральный ФО
+2021-08-08T09:06:19.568231+0300 INFO url: https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=эскалатор&morphology=on&search-filter=Дате+размещения&pageNumber=1&sortDirection=false&recordsPerPage=_20&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&fz223=on&ppRf615=on&af=on&priceFromGeneral=1000000&priceToGeneral=350000000&currencyIdGeneral=-1&publishDateFrom=06.08.2021&customerPlace=5277317
+2021-08-08T09:06:20.091279+0300 INFO ../results/2021-08-08/1379385024_0_эскалатор_Центральный ФО.xlsx
+2021-08-08T09:06:25.135002+0300 INFO id: 1379385024, key word: лифт, location: Центральный ФО
+2021-08-08T09:06:25.141612+0300 INFO url: https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=лифт&morphology=on&search-filter=Дате+размещения&pageNumber=1&sortDirection=false&recordsPerPage=_20&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&fz223=on&ppRf615=on&af=on&priceFromGeneral=1000000&priceToGeneral=350000000&currencyIdGeneral=-1&publishDateFrom=06.08.2021&customerPlace=5277317
+2021-08-08T09:06:25.953366+0300 WARNING Key word "лифт" not in subject "Поставка кнопочных выключателей ВКЛ13 (СМиСП)"
+2021-08-08T09:06:25.957898+0300 INFO ../results/2021-08-08/1379385024_4_лифт_Центральный ФО.xlsx
+2021-08-08T09:06:35.010888+0300 INFO id: 512915153, key word: "Цифровая образовательная среда", location: Центральный ФО
+2021-08-08T09:06:35.016438+0300 INFO url: https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString="Цифровая+образовательная+среда"&morphology=on&search-filter=Дате+размещения&pageNumber=1&sortDirection=false&recordsPerPage=_20&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&fz223=on&ppRf615=on&af=on&priceFromGeneral=1000000&priceToGeneral=700000000&currencyIdGeneral=-1&publishDateFrom=06.08.2021&customerPlace=5277317
+2021-08-08T09:06:35.725429+0300 INFO ../results/2021-08-08/512915153_6_'Цифровая образовательная среда'_Центральный ФО.xlsx
+2021-08-08T09:06:40.762298+0300 INFO id: 512915153, key word: Точка роста, location: Центральный ФО
+2021-08-08T09:06:40.769108+0300 INFO url: https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=Точка+роста&morphology=on&search-filter=Дате+размещения&pageNumber=1&sortDirection=false&recordsPerPage=_20&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&fz223=on&ppRf615=on&af=on&priceFromGeneral=0&priceToGeneral=700000000&currencyIdGeneral=-1&publishDateFrom=06.08.2021&customerPlace=5277317
+2021-08-08T09:06:41.324183+0300 INFO ../results/2021-08-08/512915153_2_Точка роста_Центральный ФО.xlsx
+2021-08-08T09:06:45.359857+0300 INFO id: 512915153, key word: оборудование олимпийск, location: Центральный ФО
+2021-08-08T09:06:45.366384+0300 INFO url: https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=оборудование+олимпийск&morphology=on&search-filter=Дате+размещения&pageNumber=1&sortDirection=false&recordsPerPage=_20&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&fz223=on&ppRf615=on&af=on&priceFromGeneral=1000000&priceToGeneral=700000000&currencyIdGeneral=-1&publishDateFrom=06.08.2021&customerPlace=5277317
+2021-08-08T09:06:46.115889+0300 INFO ../results/2021-08-08/512915153_0_оборудование олимпийск_Центральный ФО.xlsx
+2021-08-08T09:06:56.163291+0300 INFO id: 512915153, key word: проекта "Цифровая образовательная среда" национального проекта "Образование", location: Центральный ФО
+2021-08-08T09:06:56.173121+0300 INFO url: https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=проекта+"Цифровая+образовательная+среда"+национального+проекта+"Образование"&morphology=on&search-filter=Дате+размещения&pageNumber=1&sortDirection=false&recordsPerPage=_20&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&fz223=on&ppRf615=on&af=on&priceFromGeneral=1000000&priceToGeneral=700000000&currencyIdGeneral=-1&publishDateFrom=06.08.2021&customerPlace=5277317
+2021-08-08T09:06:56.911734+0300 INFO ../results/2021-08-08/512915153_6_проекта 'Цифровая образовательная среда' национального проекта 'Образование'_Центральный ФО.xlsx
+2021-08-08T09:07:05.958999+0300 INFO id: 512915153, key word: современная школа, location: Центральный ФО
+2021-08-08T09:07:05.983708+0300 INFO url: https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=современная+школа&morphology=on&search-filter=Дате+размещения&pageNumber=1&sortDirection=false&recordsPerPage=_20&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&fz223=on&ppRf615=on&af=on&priceFromGeneral=1000000&priceToGeneral=700000000&currencyIdGeneral=-1&publishDateFrom=06.08.2021&customerPlace=5277317
+2021-08-08T09:07:06.664667+0300 INFO ../results/2021-08-08/512915153_0_современная школа_Центральный ФО.xlsx
+2021-08-08T09:07:11.719898+0300 INFO Was saved 8 exlel tables with results in "../results/2021-08-08"
+2021-08-08T09:08:47.309730+0300 INFO =====Скрипт admin_bot_broadcast.py запустился=====
+2021-08-08T09:08:48.068719+0300 INFO Just sended file: ../results/2021-08-08/1379385024_0_эскалатор_Центральный ФО.xlsx
+2021-08-08T09:08:48.354278+0300 INFO Just sended file: ../results/2021-08-08/1379385024_1_энергосервис_Центральный ФО.xlsx
+2021-08-08T09:08:48.525274+0300 INFO Just sended file: ../results/2021-08-08/1379385024_4_лифт_Центральный ФО.xlsx
+2021-08-08T09:08:48.650434+0300 INFO Just sended file: ../results/2021-08-08/512915153_0_оборудование олимпийск_Центральный ФО.xlsx
+2021-08-08T09:08:48.821789+0300 INFO Just sended file: ../results/2021-08-08/512915153_0_современная школа_Центральный ФО.xlsx
+2021-08-08T09:08:49.092940+0300 INFO Just sended file: ../results/2021-08-08/512915153_2_Точка роста_Центральный ФО.xlsx
+2021-08-08T09:08:49.453197+0300 INFO Just sended file: ../results/2021-08-08/512915153_6_'Цифровая образовательная среда'_Центральный ФО.xlsx
+2021-08-08T09:08:49.693627+0300 INFO Just sended file: ../results/2021-08-08/512915153_6_проекта 'Цифровая образовательная среда' национального проекта 'Образование'_Центральный ФО.xlsx
+2021-08-08T09:08:49.705086+0300 INFO Going to send Logfile: ../logs/log_2021-08-08.log
+2021-08-08T09:08:50.240263+0300 INFO Just sended file: ../results/2021-08-08/1379385024_0_эскалатор_Центральный ФО.xlsx
+2021-08-08T09:08:50.376231+0300 INFO Just sended file: ../results/2021-08-08/1379385024_1_энергосервис_Центральный ФО.xlsx
+2021-08-08T09:08:50.503292+0300 INFO Just sended file: ../results/2021-08-08/1379385024_4_лифт_Центральный ФО.xlsx
+2021-08-08T09:08:50.700316+0300 INFO Just sended file: ../results/2021-08-08/512915153_0_оборудование олимпийск_Центральный ФО.xlsx
+2021-08-08T09:08:51.129373+0300 INFO Just sended file: ../results/2021-08-08/512915153_0_современная школа_Центральный ФО.xlsx
+2021-08-08T09:08:51.539541+0300 INFO Just sended file: ../results/2021-08-08/512915153_2_Точка роста_Центральный ФО.xlsx
+2021-08-08T09:08:51.952129+0300 INFO Just sended file: ../results/2021-08-08/512915153_6_'Цифровая образовательная среда'_Центральный ФО.xlsx
+2021-08-08T09:08:52.125359+0300 INFO Just sended file: ../results/2021-08-08/512915153_6_проекта 'Цифровая образовательная среда' национального проекта 'Образование'_Центральный ФО.xlsx
+2021-08-08T09:08:52.139543+0300 INFO Going to send Logfile: ../logs/log_2021-08-08.log
+2021-08-08T21:20:06.315267+0300 INFO =====Script admin_bot_broadcast.py launched=====
+2021-08-08T21:20:06.317016+0300 INFO =====Start sending files to 70365850=====
+2021-08-08T21:20:06.647567+0300 INFO Target [ID:70365850]: success
+2021-08-08T21:20:32.471514+0300 INFO =====Script admin_bot_broadcast.py launched=====
+2021-08-08T21:20:32.473196+0300 INFO =====Start sending files to 70365850=====
+2021-08-08T21:20:32.800126+0300 ERROR Target [ID:70365850]: blocked by user
+2021-08-08T21:31:03.697994+0300 INFO =====Script admin_bot_broadcast.py launched=====
+2021-08-08T21:31:03.704131+0300 INFO =====Start sending files to 70365850=====
+2021-08-08T21:31:04.077473+0300 INFO Target [ID:70365850]: success
+2021-08-08T21:31:04.086022+0300 INFO Going to send file: ../logs/log_2021-08-08.log
+2021-08-08T21:31:04.322248+0300 INFO Target [ID:70365850]: success
+2021-08-08T21:31:37.052713+0300 INFO =====Script admin_bot_broadcast.py launched=====
+2021-08-08T21:31:37.055692+0300 INFO =====Start sending files to 70365850=====
+2021-08-08T21:31:37.463257+0300 ERROR Target [ID:70365850]: blocked by user
+2021-08-08T21:31:37.475728+0300 INFO Going to send file: ../logs/log_2021-08-08.log
+2021-08-08T21:31:37.677357+0300 ERROR Target [ID:70365850]: blocked by user
+2021-08-08T21:43:13.160468+0300 INFO =====Script admin_bot_broadcast.py launched=====
+2021-08-08T21:43:13.162206+0300 INFO =====Start sending files to 70365850=====
+2021-08-08T21:43:13.502313+0300 INFO Target [ID:70365850]: success
+2021-08-08T21:43:13.645976+0300 INFO Just sended file: ../results/2021-08-08/1379385024_0_эскалатор_Центральный ФО.xlsx
+2021-08-08T21:43:13.648811+0300 INFO Target [ID:70365850]: success
+2021-08-08T21:43:13.659838+0300 INFO Going to send a logfile: ../logs/log_2021-08-08.log
+2021-08-08T21:43:13.797430+0300 INFO Just sended file: ../logs/log_2021-08-08.log
+2021-08-08T21:43:13.801172+0300 INFO Target [ID:70365850]: success
+2021-08-08T21:45:38.154085+0300 INFO =====Script admin_bot_broadcast.py launched=====
+2021-08-08T21:45:38.156035+0300 INFO =====Start sending files to 70365850=====
+2021-08-08T21:45:38.427674+0300 ERROR Target [ID:70365850]: blocked by user
+2021-08-08T21:45:38.553515+0300 ERROR Target [ID:70365850]: blocked by user
+2021-08-08T21:45:38.569303+0300 INFO Going to send a logfile: ../logs/log_2021-08-08.log
+2021-08-08T21:45:38.661835+0300 ERROR Target [ID:70365850]: blocked by user
+2021-08-08T21:46:54.488143+0300 INFO =====Script admin_bot_broadcast.py launched=====
+2021-08-08T21:46:54.490220+0300 INFO =====Start sending files to 70365850=====
+2021-08-08T21:46:54.844182+0300 INFO Target [ID:70365850]: success
+2021-08-08T21:46:55.116086+0300 INFO Just sended file: ../results/2021-08-08/1379385024_0_эскалатор_Центральный ФО.xlsx
+2021-08-08T21:46:55.118462+0300 INFO Target [ID:70365850]: success
+2021-08-08T21:46:55.132906+0300 INFO Going to send a logfile: ../logs/log_2021-08-08.log
+2021-08-08T21:46:55.436160+0300 INFO Just sended file: ../logs/log_2021-08-08.log
+2021-08-08T21:46:55.440930+0300 INFO Target [ID:70365850]: success
