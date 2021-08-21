@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 
 from aiogram import Bot, Dispatcher, executor
-from aiogram.types import InputFile
 from dotenv import load_dotenv
 from loguru import logger
 
@@ -27,13 +26,12 @@ dp = Dispatcher(bot)
 async def broadcaster(user_id):
     folder = f"{consts.RESULTS_FOLDER}/{FormatDate(GetCurrentDate())}"
     files = os.listdir(folder)
-
+    
     await send_message(bot, user_id, f"Сегодня {FormatDate(GetCurrentDate())} создано {len(files)} документов")
     
     for file in files:
         file_name = folder + "/" + file
         await send_document(bot, user_id, file_name)
-        break
 
     log_file = f"{consts.LOG_FILE}{FormatDate(GetCurrentDate())}.log"
     await send_document(bot, user_id, log_file)
@@ -45,6 +43,6 @@ if __name__ == "__main__":
     logger.info(f"=====Script {Path(__file__).name} launched=====")
     # Запуск бота
     # for account in [70365850, 405503153]:
-    for user_id in [70365850]:
+    for user_id in [70365850, 405503153]:
         logger.info(f"=====Start sending files to user {user_id}=====")
         executor.start(dp, broadcaster(user_id))

@@ -12,7 +12,7 @@ import consts
 def RequestFormation(key_word: str,
                      min_price: int,
                      max_price: int,
-                     publish_date: str,
+                     publish_date_from: str,
                      location: str,
                      close_date = None) -> str:
 
@@ -38,9 +38,12 @@ def RequestFormation(key_word: str,
         ("priceFromGeneral", str(min_price * 10**6)),
         ("priceToGeneral", str(max_price * 10**6)),
         ("currencyIdGeneral", "-1"),
-        ("publishDateFrom", publish_date),
+        ("publishDateFrom", publish_date_from),
         ("customerPlace", str(location_id))
     ]
+
+    if consts.PUBLISH_DATE_TO:
+        params.append(("publishDateTo", publish_date_from))
 
     if close_date != None:
         params.append(("applSubmissionCloseDateFrom", close_date))

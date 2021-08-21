@@ -4,14 +4,9 @@ services:
   telegram-bot:
     build: .
     restart: always
-    command: cron >> /var/log/cron.log && tail -f /var/log/cron.log
+    command: cron && tail -f /var/log/cron.log
     volumes:
       - ./logs:/code/logs
       - ./results:/code/results
     environment:
       - TZ=Europe/Moscow 
-    #   - ADMIN_TELEGRAM_API_TOKEN=1665844597:AAEgUP-QDp67bQ-yCYATgvMhGVAKefn2iRA
-    # - AIRTABLE_API_KEY=keyOmjmN55RvFgGd0
-      # - BASE_KEY=appodjaedadmdw0QB
-      # - TABLE_NAME=Customers
-      # - TELEGRAM_ACCESS_ID=70365850,405503153

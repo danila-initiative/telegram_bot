@@ -1,9 +1,12 @@
+
+PUBLISH_DATE_TO = True      # дата размещения - только предыдущий рабочий день
+
 PUBLISH_DELTA = -1
 CLOSE_DELTA = 5
 TIME_ZONE = "Europe/Moscow"
 
-RESULTS_FOLDER = "../results"
-LOG_FILE = "../logs/log_"
+RESULTS_FOLDER = "/code/results"
+LOG_FILE = "/code/logs/log_"
 
 BASE_URL = "https://zakupki.gov.ru/epz/order/extendedsearch/results.html?"
 CUSTOMER_PLACES = {
