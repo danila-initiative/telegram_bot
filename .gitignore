@@ -2,7 +2,7 @@ _other
 .vscode
 results
 *__pycache__
-.env
+*.env
 *.DS_Store
 .DS_Store
 logs

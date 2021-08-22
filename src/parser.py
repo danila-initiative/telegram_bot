@@ -45,6 +45,7 @@ def RequestFormation(key_word: str,
     if consts.PUBLISH_DATE_TO:
         params.append(("publishDateTo", publish_date_from))
 
+
     if close_date != None:
         params.append(("applSubmissionCloseDateFrom", close_date))
 
