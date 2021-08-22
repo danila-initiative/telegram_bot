@@ -1,8 +1,8 @@
-_other
 .vscode
-results
 *__pycache__
-*.env
-*.DS_Store
-.DS_Store
+
+results
 logs
+
+**/.env
+**/.DS_Store
