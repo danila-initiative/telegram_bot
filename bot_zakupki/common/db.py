@@ -1,97 +1,75 @@
-from typing import Dict, List
-from loguru import logger
-
+import os
 import sqlite3
 from sqlite3 import Error
+from typing import Dict, List
+
+from loguru import logger
 
 from bot_zakupki.common import consts
 
-# TODO: вроде хороший коннекшн. Заменить print на логирование и использовать в других функциях
-# и вроде даже путь не нужен
-
 
 def create_connection(path):
-    connection = None
+    conn = None
     try:
-        connection = sqlite3.connect(path)
+        conn = sqlite3.connect(path)
         logger.info("Connection to SQLite DB successful")
     except Error as e:
         logger.exception(f"The error '{e}' occurred")
-    return connection
+    return conn
 
 
-# with open('scheduling.sql', 'r') as sql_file:
-#     sql_script = sql_file.read()
-#
-# storage = sqlite3.connect('scheduling.storage')
-# cursor = storage.cursor()
-# cursor.executescript(sql_script)
-# storage.commit()
-# storage.close()
-
-conn = sqlite3.connect('/app/db/zakupki.db')
-cursor = conn.cursor()
-
-
-def insert(table_name: str, column_values: Dict):
+def insert_one_in_search_query(cursor: sqlite3.Cursor, column_values: Dict):
     columns = ', '.join(column_values.keys())
     values = [tuple(column_values.values())]
     placeholders = ", ".join("?" * len(column_values.keys()))
     cursor.executemany(
-        f"INSERT INTO {table_name} "
+        f"INSERT INTO search_query "
         f"({columns}) "
         f"VALUES ({placeholders})",
         values)
-    conn.commit()
+    # conn.commit()
 
 
-def fetchall(table: str, columns: List[str]) -> List[Dict]:
-    columns_joined = ", ".join(columns)
-    cursor.execute(f"SELECT {columns_joined} FROM {table}")
+def get_all_search_queries(cursor: sqlite3.Cursor) -> List[Dict]:
+    sql = "SELECT * FROM search_query"
+    cursor.execute(sql)
     rows = cursor.fetchall()
-    result = []
-    for row in rows:
-        dict_row = {}
-        for index, column in enumerate(columns):
-            dict_row[column] = row[index]
-        result.append(dict_row)
-    return result
+    return rows
 
 
-def delete(table: str, row_id: int) -> None:
-    row_id = int(row_id)
-    cursor.execute(f"delete from {table} where id={row_id}")
-    conn.commit()
+# def delete(table: str, row_id: int) -> None:
+#     row_id = int(row_id)
+#     cursor.execute(f"delete from {table} where id={row_id}")
+#     conn.commit()
+#
+#
+# def get_cursor():
+#     return cursor
 
 
-def get_cursor():
-    return cursor
-
-
-def _init_db():
+def _init_db(cursor: sqlite3.Cursor, path_to_migrations: str = consts.PATH_TO_MIGRATIONS):
     """Инициализирует БД"""
-    with open("./bot_zakupki/storage/migrations/createdb.sql", "r") as f:
-        sql = f.read()
-    cursor.executescript(sql)
-    conn.commit()
+    migrations = os.listdir(path_to_migrations)
+    migrations = [os.path.join(path_to_migrations, mig) for mig in migrations]
+    logger.info(f"migrations: {migrations}")
+    for migration in migrations:
+        with open(migration, "r") as f:
+            sql = f.read()
+        cursor.executescript(sql)
+        # connection.commit()
 
 
-def check_db_exists():
+def check_db_exists(path_to_db: str = consts.PATH_TO_DB):
     """Проверяет, инициализирована ли БД, если нет — инициализирует"""
-    cursor.execute("SELECT name FROM sqlite_master "
-                   "WHERE type='table' AND name='results'")
-    table_exists = cursor.fetchall()
-    if table_exists:
-        return
-    _init_db()
+    connection = create_connection(path_to_db)
+    cursor = connection.cursor()
+
+    for table_name in consts.TABLES_NAME:
+        cursor.execute("SELECT name FROM sqlite_master "
+                       f"WHERE type='table' AND name='{table_name}'")
+        table_exists = cursor.fetchall()
+        if not table_exists:
+            _init_db(cursor)
 
 
 check_db_exists()
-new_queries = {
-    "user_id": 123,
-    "search_string": "one"
-}
-
-insert("search_query", new_queries)
-res = fetchall("search_query", ["id", "user_id", "search_string", "created_at"])
-print(res)

@@ -1,26 +1,41 @@
-import os
+import datetime
 import sqlite3
+
 import pytest
 
+from bot_zakupki.common import db
 
-# TODO: автоматиизировать создание таблиц
-# выполнить все файлы из папки bot_zakupki/storage/migrations по примеру функции ниже
+
 @pytest.fixture(scope='function')
-def db(tmpdir):
-    file = os.path.join(tmpdir.strpath, "test.storage")
-    conn = sqlite3.connect(file)
-    conn.execute("CREATE TABLE blog (id, title, text)")
+def setup_database():
+    conn = sqlite3.connect(':memory:')
+    cursor = conn.cursor()
+    db._init_db(cursor)
+
     yield conn
     conn.close()
 
 
-def test_entry_creation(db):
-    query = ("INSERT INTO blog "
-             "(id, title, text)"
-             "VALUES (?, ?, ?)")
+def test_insertion(setup_database):
+    print(datetime.datetime.now())
+    # connection = setup_database
+    cursor = setup_database.cursor()
+    res_before = db.get_all_search_queries(cursor)
+    data = {
+        "user_id": 123456,
+        "search_string": "search_string",
+        "location": "Москва"
+    }
+    db.insert_one_in_search_query(cursor, data)
+    res_after = db.get_all_search_queries(cursor)
 
-    values = (1,
-              "PyTest",
-              "This is a blog entry")
+    now = datetime.datetime.now()
+    date_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
-    db.execute(query, values)
+    last_sub_day = now + datetime.timedelta(days=7)
+    last_date = last_sub_day.strftime("%Y-%m-%d %H:%M:%S")
+
+    assert res_before == []
+    assert res_after == [(1, '123456', 'search_string',
+                          'Москва', None, date_time,
+                          last_date, date_time, 0)]
