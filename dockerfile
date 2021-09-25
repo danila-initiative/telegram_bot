@@ -1,20 +1,18 @@
 FROM python:3.9.6-slim-buster
 
-RUN apt-get update && apt-get -y install cron && apt-get -y install vim
-RUN mkdir code
-RUN mkdir code/logs
-RUN mkdir code/results
+RUN apt-get update \
+    && apt-get install --no-install-recommends -yq \
+    cron \
+    vim \
+    make
 
-COPY requirements.txt /code
-COPY src /code/src
-COPY .env /code/src
+RUN mkdir app
 
-# Cron
-COPY cron_file /etc/cron.d/cron_file
-RUN chmod 0644 /etc/cron.d/cron_file
-RUN crontab /etc/cron.d/cron_file
-RUN touch /var/log/cron.log
+WORKDIR /app
 
-WORKDIR /code
+COPY ./runtests.sh ./runtests.sh
 
+COPY ./requirements.txt	./requirements.txt
 RUN pip install -r requirements.txt	
+
+# RUN pytest tests/

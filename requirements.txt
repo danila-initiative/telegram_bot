@@ -1,9 +1,7 @@
-airtable-python-wrapper==0.15.2
-python-dateutil 
+pytest
 beautifulsoup4 
 pandas 
-openpyxl 
-xlsxwriter
 loguru
-aiogram
 python-dotenv
+requests
+coverage

@@ -6,7 +6,9 @@ services:
     restart: always
     command: cron && tail -f /var/log/cron.log
     volumes:
-      - ./logs:/code/logs
-      - ./results:/code/results
+      - ./bot_zakupki:/app/bot_zakupki
+      - ./tests:/app/tests
+      - ./db:/app/db
+      - ./logs:/app/logs
     environment:
-      - TZ=Europe/Moscow 
+      - TZ=Europe/Moscow
