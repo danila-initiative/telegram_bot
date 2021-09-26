@@ -1,12 +1,12 @@
-import datetime
 import os
 import sqlite3
 from sqlite3 import Error
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from loguru import logger
 
 from bot_zakupki.common import consts
+from bot_zakupki.common import dates
 from bot_zakupki.common import models
 
 
@@ -52,23 +52,7 @@ check_db_exists()
 
 # ===============search_query===============
 
-
-def insert_new_search_query(cursor: sqlite3.Cursor, column_values: Dict):
-    columns = ', '.join(column_values.keys())
-    values = [tuple(column_values.values())]
-    placeholders = ", ".join("?" * len(column_values.keys()))
-    cursor.executemany(
-        f"INSERT INTO search_query "
-        f"({columns}) "
-        f"VALUES ({placeholders})",
-        values)
-    # conn.commit()
-
-
-def get_all_search_queries(cursor: sqlite3.Cursor) -> List[models.SearchQuery]:
-    sql = "SELECT * FROM search_query"
-    cursor.execute(sql)
-    rows = cursor.fetchall()
+def rows_to_search_query_model(rows: List[Tuple]) -> List[models.SearchQuery]:
     result = []
 
     for row in rows:
@@ -79,11 +63,45 @@ def get_all_search_queries(cursor: sqlite3.Cursor) -> List[models.SearchQuery]:
             location=row[3],
             min_price=row[4],
             max_price=row[5],
-            created_at=datetime.datetime.strptime(row[6], '%Y-%m-%d %H:%M:%S'),
-            subscription_last_day=datetime.datetime.strptime(row[7], '%Y-%m-%d %H:%M:%S'),
-            payment_last_day=datetime.datetime.strptime(row[8], '%Y-%m-%d %H:%M:%S'),
+            created_at=dates.sqlite_date_to_datetime(row[6]),
+            subscription_last_day=dates.sqlite_date_to_datetime(row[7]),
+            payment_last_day=dates.sqlite_date_to_datetime(row[8]),
             deleted=bool(row[9])
         )
         result.append(search_query)
 
     return result
+
+
+def insert_new_search_query(cursor: sqlite3.Cursor, column_values: Dict):
+    columns = ', '.join(column_values.keys())
+    values = [tuple(column_values.values())]
+    placeholders = ", ".join("?" * len(column_values.keys()))
+    cursor.executemany(
+        f"INSERT INTO search_query "
+        f"({columns}) "
+        f"VALUES ({placeholders})",
+        values
+    )
+    # conn.commit()
+
+
+def get_all_search_queries(cursor: sqlite3.Cursor) -> List[models.SearchQuery]:
+    sql = "SELECT * FROM search_query"
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+
+    return rows_to_search_query_model(rows)
+
+
+def get_all_search_queries_by_user_id(cursor: sqlite3.Cursor, user_id: str) \
+        -> List[models.SearchQuery]:
+    sql = '''
+        SELECT *
+        FROM search_query
+        WHERE user_id = ?
+    '''
+    cursor.execute(sql, (user_id,))
+    rows = cursor.fetchall()
+
+    return rows_to_search_query_model(rows)

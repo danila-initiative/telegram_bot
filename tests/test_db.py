@@ -8,7 +8,7 @@ from bot_zakupki.common import models
 
 
 @pytest.fixture(scope='function')
-def setup_database():
+def setup_db():
     conn = sqlite3.connect(':memory:')
     cursor = conn.cursor()
     db._init_db(cursor)
@@ -17,8 +17,35 @@ def setup_database():
     conn.close()
 
 
-def test_insert_new_search_query(setup_database):
-    cursor = setup_database.cursor()
+@pytest.fixture(scope='function')
+def setup_db_with_data(setup_db):
+    cursor = setup_db.cursor()
+    query_1 = {
+        "user_id": 123456,
+        "search_string": "search_string_1",
+        "location": "Москва",
+    }
+    query_2 = {
+        "user_id": 78910,
+        "search_string": "search_string_2",
+        "location": "Питер",
+    }
+    query_3 = {
+        "user_id": '123456',
+        "search_string": "search_string_2",
+        "location": "Питер",
+        "deleted": 1,
+    }
+
+    queries = [query_1, query_2, query_3]
+    for query in queries:
+        db.insert_new_search_query(cursor, query)
+
+    yield cursor
+
+
+def test_insert_new_search_query(setup_db):
+    cursor = setup_db.cursor()
     res_before = db.get_all_search_queries(cursor)
     data = {
         "user_id": 123456,
@@ -47,3 +74,12 @@ def test_insert_new_search_query(setup_database):
 
     assert res_before == []
     assert res_after == [expected_result]
+
+
+def test_get_all_search_queries_by_user_id(setup_db_with_data):
+    cursor = setup_db_with_data
+    res = db.get_all_search_queries_by_user_id(cursor, "123456")
+
+    assert len(res) == 2
+    for row in res:
+        assert row.user_id == '123456'
