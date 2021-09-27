@@ -1,8 +1,8 @@
-import pandas as pd
+# import pandas as pd
 import requests
 from bs4 import BeautifulSoup as BS
 from loguru import logger
-from pandas.core.frame import DataFrame
+# from pandas.core.frame import DataFrame
 from requests import Response
 
 from bot_zakupki.common import consts
@@ -47,7 +47,9 @@ def get_page_by_url(url: str) -> Response:
 
 
 @logger.catch
-def parse_result_page(page: Response, search_string, location: str) -> list[models.Result]:
+def parse_result_page(page: Response, search_string,
+                      location: str) \
+        -> list[models.Result]:
     """Return all results with key words in purchase subject"""
     results = []
 
@@ -83,15 +85,17 @@ def parse_result_page(page: Response, search_string, location: str) -> list[mode
                     key_words_in_subject = False
 
             if not key_words_in_subject:
-                logger.warning(
-                    f"Key word \"{search_string}\" not in subject \"{subject_of_purchase}\"")
+                logger.info(
+                    f"Key word \"{search_string}\" "
+                    f"not in subject \"{subject_of_purchase}\"")
                 continue
 
         number = i.find("div", class_="registry-entry__header-mid__number")
         number_of_purchase = number.text.strip()
         price = i.find("div", class_="price-block__value").text.strip()
 
-        customer = i.find("div", class_="registry-entry__body-href").text.strip()
+        customer = i.find("div",
+                          class_="registry-entry__body-href").text.strip()
         customer = customer.replace("\n", "")
 
         all_dates = i.find_all("div", class_="data-block__value")
@@ -118,25 +122,24 @@ def parse_result_page(page: Response, search_string, location: str) -> list[mode
 
     return results
 
-
-def SaveDfToExel(df: DataFrame, file_name: str):
-    writer = pd.ExcelWriter(file_name, engine='xlsxwriter')
-    df.to_excel(writer, index=False, sheet_name='Sheet1')
-
-    workbook = writer.book
-    worksheet = writer.sheets['Sheet1']
-    wrap_format = workbook.add_format({'text_wrap': True})
-
-    center_format = workbook.add_format(
-        {'align': 'center', 'valign': 'vcenter'})
-    v_center_format = workbook.add_format({'valign': 'vcenter'})
-    link_format = workbook.add_format(
-        {'font_color': 'blue', 'underline': True, 'valign': 'vcenter'})
-
-    worksheet.set_column('A:A', 25, v_center_format)
-    worksheet.set_column('B:B', 50, wrap_format)
-    worksheet.set_column('C:C', 25, center_format)
-    worksheet.set_column('D:D', 30, center_format)
-    worksheet.set_column('E:E', 100, link_format)
-
-    writer.save()
+# def SaveDfToExel(df: DataFrame, file_name: str):
+#     writer = pd.ExcelWriter(file_name, engine='xlsxwriter')
+#     df.to_excel(writer, index=False, sheet_name='Sheet1')
+#
+#     workbook = writer.book
+#     worksheet = writer.sheets['Sheet1']
+#     wrap_format = workbook.add_format({'text_wrap': True})
+#
+#     center_format = workbook.add_format(
+#         {'align': 'center', 'valign': 'vcenter'})
+#     v_center_format = workbook.add_format({'valign': 'vcenter'})
+#     link_format = workbook.add_format(
+#         {'font_color': 'blue', 'underline': True, 'valign': 'vcenter'})
+#
+#     worksheet.set_column('A:A', 25, v_center_format)
+#     worksheet.set_column('B:B', 50, wrap_format)
+#     worksheet.set_column('C:C', 25, center_format)
+#     worksheet.set_column('D:D', 30, center_format)
+#     worksheet.set_column('E:E', 100, link_format)
+#
+#     writer.save()
