@@ -22,7 +22,8 @@ def create_connection(path):
     return conn
 
 
-def _init_db(cursor: sqlite3.Cursor, path_to_migrations: str = consts.PATH_TO_MIGRATIONS):
+def _init_db(cursor: sqlite3.Cursor,
+             path_to_migrations: str = consts.PATH_TO_MIGRATIONS):
     """Инициализирует БД"""
     migrations = os.listdir(path_to_migrations)
     migrations = [os.path.join(path_to_migrations, mig) for mig in migrations]
@@ -102,6 +103,21 @@ def get_all_search_queries_by_user_id(cursor: sqlite3.Cursor, user_id: str) \
         WHERE user_id = ?
     '''
     cursor.execute(sql, (user_id,))
+    rows = cursor.fetchall()
+
+    return rows_to_search_query_model(rows)
+
+
+def get_all_active_search_queries_by_user_id(cursor: sqlite3.Cursor,
+                                             user_id: str, date: str) \
+        -> List[models.SearchQuery]:
+    sql = '''
+            SELECT *
+            FROM search_query
+            WHERE user_id = ?
+            AND (subscription_last_day > ?)
+        '''
+    cursor.execute(sql, (user_id, date))
     rows = cursor.fetchall()
 
     return rows_to_search_query_model(rows)

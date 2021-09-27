@@ -3,6 +3,7 @@ import sqlite3
 
 import pytest
 
+from bot_zakupki.common import dates
 from bot_zakupki.common import db
 from bot_zakupki.common import models
 
@@ -24,20 +25,29 @@ def setup_db_with_data(setup_db):
         "user_id": 123456,
         "search_string": "search_string_1",
         "location": "Москва",
+        "subscription_last_day": '2021-07-20 10:10:00'
     }
     query_2 = {
         "user_id": 78910,
         "search_string": "search_string_2",
         "location": "Питер",
+        "subscription_last_day": '2021-07-25 10:10:00'
     }
     query_3 = {
         "user_id": '123456',
         "search_string": "search_string_2",
         "location": "Питер",
         "deleted": 1,
+        "subscription_last_day": '2021-07-30 10:10:00'
+    }
+    query_4 = {
+        "user_id": 123456,
+        "search_string": "search_string_1",
+        "location": "Москва",
+        "subscription_last_day": '2021-07-10 10:10:00'
     }
 
-    queries = [query_1, query_2, query_3]
+    queries = [query_1, query_2, query_3, query_4]
     for query in queries:
         db.insert_new_search_query(cursor, query)
 
@@ -80,6 +90,18 @@ def test_get_all_search_queries_by_user_id(setup_db_with_data):
     cursor = setup_db_with_data
     res = db.get_all_search_queries_by_user_id(cursor, "123456")
 
-    assert len(res) == 2
+    assert len(res) == 3
     for row in res:
         assert row.user_id == '123456'
+
+
+def test_get_all_active_search_queries_by_user_id(setup_db_with_data):
+    today = '2021-07-15 10:10:00'
+    cursor = setup_db_with_data
+    res = db.get_all_active_search_queries_by_user_id(cursor,
+                                                      '123456',
+                                                      today)
+
+    assert len(res) == 2
+    for row in res:
+        assert row.subscription_last_day > dates.sqlite_date_to_datetime(today)
