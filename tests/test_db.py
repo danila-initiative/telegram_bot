@@ -3,11 +3,13 @@ import sqlite3
 
 import pytest
 
+from bot_zakupki.common import dates
 from bot_zakupki.common import db
+from bot_zakupki.common import models
 
 
 @pytest.fixture(scope='function')
-def setup_database():
+def setup_db():
     conn = sqlite3.connect(':memory:')
     cursor = conn.cursor()
     db._init_db(cursor)
@@ -16,26 +18,90 @@ def setup_database():
     conn.close()
 
 
-def test_insertion(setup_database):
-    print(datetime.datetime.now())
-    # connection = setup_database
-    cursor = setup_database.cursor()
+@pytest.fixture(scope='function')
+def setup_db_with_data(setup_db):
+    cursor = setup_db.cursor()
+    query_1 = {
+        "user_id": 123456,
+        "search_string": "search_string_1",
+        "location": "Москва",
+        "subscription_last_day": '2021-07-20 10:10:00'
+    }
+    query_2 = {
+        "user_id": 78910,
+        "search_string": "search_string_2",
+        "location": "Питер",
+        "subscription_last_day": '2021-07-25 10:10:00'
+    }
+    query_3 = {
+        "user_id": '123456',
+        "search_string": "search_string_2",
+        "location": "Питер",
+        "deleted": 1,
+        "subscription_last_day": '2021-07-30 10:10:00'
+    }
+    query_4 = {
+        "user_id": 123456,
+        "search_string": "search_string_1",
+        "location": "Москва",
+        "subscription_last_day": '2021-07-10 10:10:00'
+    }
+
+    queries = [query_1, query_2, query_3, query_4]
+    for query in queries:
+        db.insert_new_search_query(cursor, query)
+
+    yield cursor
+
+
+def test_insert_new_search_query(setup_db):
+    cursor = setup_db.cursor()
     res_before = db.get_all_search_queries(cursor)
     data = {
         "user_id": 123456,
         "search_string": "search_string",
         "location": "Москва"
     }
-    db.insert_one_in_search_query(cursor, data)
+
+    db.insert_new_search_query(cursor, data)
     res_after = db.get_all_search_queries(cursor)
 
-    now = datetime.datetime.now()
-    date_time = now.strftime("%Y-%m-%d %H:%M:%S")
-
+    now = datetime.datetime.now().replace(microsecond=0)
     last_sub_day = now + datetime.timedelta(days=7)
-    last_date = last_sub_day.strftime("%Y-%m-%d %H:%M:%S")
+
+    expected_result = models.SearchQuery(
+        id=1,
+        user_id='123456',
+        search_string='search_string',
+        location='Москва',
+        min_price=0,
+        max_price=None,
+        created_at=now,
+        subscription_last_day=last_sub_day,
+        payment_last_day=now,
+        deleted=bool(0)
+    )
 
     assert res_before == []
-    assert res_after == [(1, '123456', 'search_string',
-                          'Москва', None, date_time,
-                          last_date, date_time, 0)]
+    assert res_after == [expected_result]
+
+
+def test_get_all_search_queries_by_user_id(setup_db_with_data):
+    cursor = setup_db_with_data
+    res = db.get_all_search_queries_by_user_id(cursor, "123456")
+
+    assert len(res) == 3
+    for row in res:
+        assert row.user_id == '123456'
+
+
+def test_get_all_active_search_queries_by_user_id(setup_db_with_data):
+    today = '2021-07-15 10:10:00'
+    cursor = setup_db_with_data
+    res = db.get_all_active_search_queries_by_user_id(cursor,
+                                                      '123456',
+                                                      today)
+
+    assert len(res) == 2
+    for row in res:
+        assert row.subscription_last_day > dates.sqlite_date_to_datetime(today)
