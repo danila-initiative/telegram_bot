@@ -6,6 +6,7 @@ from loguru import logger
 from requests import Response
 
 from bot_zakupki.common import consts
+from bot_zakupki.common import dates
 from bot_zakupki.common import models
 
 
@@ -93,6 +94,13 @@ def parse_result_page(page: Response, search_string,
         number = i.find("div", class_="registry-entry__header-mid__number")
         number_of_purchase = number.text.strip()
         price = i.find("div", class_="price-block__value").text.strip()
+        price = price.split(",")
+        new_price = ""
+        for letter in price[0]:
+            if letter.isdigit():
+                new_price += letter
+
+        print(f"price: {int(new_price)}")
 
         customer = i.find("div",
                           class_="registry-entry__body-href").text.strip()
@@ -110,9 +118,9 @@ def parse_result_page(page: Response, search_string,
         results.append(models.Result(
             search_string=search_string,
             number_of_purchase=number_of_purchase,
-            publish_date=publish_date,
-            finish_date=finish_date,
-            price=price,
+            publish_date=dates.res_date_to_datetime(publish_date),
+            finish_date=dates.res_date_to_datetime(finish_date),
+            price=int(new_price),
             subject_of_purchase=subject_of_purchase,
             link=link,
             customer=customer,
