@@ -7,6 +7,10 @@ def sqlite_date_to_datetime(date: str) -> datetime.datetime:
     return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
 
 
+def res_date_to_datetime(date: str) -> datetime.datetime:
+    return datetime.datetime.strptime(date, '%d.%m.%Y')
+
+
 def get_date_with_delta_for_request(publish_delta=consts.PUBLISH_DELTA) -> str:
     # return first working day with shift from today
     # today: 07.08.2021
