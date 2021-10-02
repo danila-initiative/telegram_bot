@@ -7,9 +7,6 @@ from bot_zakupki.common import models
 from bot_zakupki.common import parser
 
 
-# logger.add(sys.stderr, format="{time} {level} {message}",
-#            level="INFO")
-
 # TODO: Дописать параметризованную проверку результатов
 # TODO: добавить тест с пустой страницей выдачи
 @pytest.mark.parametrize(
