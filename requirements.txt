@@ -6,3 +6,4 @@ python-dotenv
 requests
 coverage
 flake8
+aiogram
