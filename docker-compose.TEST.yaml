@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  telegram-bot:
+    build: .
+    restart: always
+    command: bash runtests.sh
+    volumes:
+      - ./bot_zakupki:/app/bot_zakupki
+      - ./tests:/app/tests
+      - ./db:/app/db
+      - ./logs:/app/logs
+    environment:
+      - TZ=Europe/Moscow
+      - PYTHONPATH=/app
