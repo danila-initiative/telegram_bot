@@ -1,3 +1,4 @@
+import datetime
 import os
 import sqlite3
 from sqlite3 import Error
@@ -13,7 +14,10 @@ from bot_zakupki.common import models
 
 # ===============Common===============
 
-def get_connection_cursor(path: str = consts.PATH_TO_DB):
+
+def get_connection_cursor(
+        path: str = consts.PATH_TO_DB,
+) -> (sqlite3.Connection, sqlite3.Cursor):
     connection = sqlite3.Connection
     cursor = sqlite3.Cursor
     try:
@@ -27,9 +31,11 @@ def get_connection_cursor(path: str = consts.PATH_TO_DB):
     return connection, cursor
 
 
-def init_db(connection: sqlite3.Connection,
-            cursor: sqlite3.Cursor,
-            path_to_migrations: str = consts.PATH_TO_MIGRATIONS):
+def init_db(
+        connection: sqlite3.Connection,
+        cursor: sqlite3.Cursor,
+        path_to_migrations: str = consts.PATH_TO_MIGRATIONS,
+):
     """Инициализирует БД"""
     migrations = os.listdir(path_to_migrations)
     migrations = [os.path.join(path_to_migrations, mig) for mig in migrations]
@@ -46,14 +52,17 @@ def check_db_exists(path_to_db: str = consts.PATH_TO_DB):
     connection, cursor = get_connection_cursor(path_to_db)
 
     for table_name in consts.TABLES_NAME:
-        cursor.execute("SELECT name FROM sqlite_master "
-                       f"WHERE type='table' AND name='{table_name}'")
+        cursor.execute(
+            "SELECT name FROM sqlite_master "
+            f"WHERE type='table' AND name='{table_name}'"
+        )
         table_exists = cursor.fetchall()
         if not table_exists:
             init_db(connection, cursor)
 
 
 # ===============search_query===============
+
 
 def rows_to_search_query_model(rows: List[Tuple]) -> List[models.SearchQuery]:
     result = []
@@ -69,26 +78,28 @@ def rows_to_search_query_model(rows: List[Tuple]) -> List[models.SearchQuery]:
             created_at=dates.sqlite_date_to_datetime(row[6]),
             subscription_last_day=dates.sqlite_date_to_datetime(row[7]),
             payment_last_day=dates.sqlite_date_to_datetime(row[8]),
-            deleted=bool(row[9])
+            deleted=bool(row[9]),
         )
         result.append(search_query)
 
     return result
 
 
-def insert_new_search_query(connection: Optional[sqlite3.Connection],
-                            cursor: Optional[sqlite3.Cursor],
-                            column_values: Dict):
+def insert_new_search_query(
+        connection: Optional[sqlite3.Connection],
+        cursor: Optional[sqlite3.Cursor],
+        column_values: Dict,
+):
     if not connection and not cursor:
         connection, cursor = get_connection_cursor()
-    columns = ', '.join(column_values.keys())
+    columns = ", ".join(column_values.keys())
     values = [tuple(column_values.values())]
     placeholders = ", ".join("?" * len(column_values.keys()))
     cursor.executemany(
         f"INSERT INTO search_query "
         f"({columns}) "
         f"VALUES ({placeholders})",
-        values
+        values,
     )
     connection.commit()
 
@@ -101,33 +112,42 @@ def get_all_search_queries(cursor: sqlite3.Cursor) -> List[models.SearchQuery]:
     return rows_to_search_query_model(rows)
 
 
-def get_all_search_queries_by_user_id(cursor: sqlite3.Cursor, user_id: str) \
-        -> List[models.SearchQuery]:
-    sql = '''
+def get_all_search_queries_by_user_id(
+        user_id: str, cursor: Optional[sqlite3.Cursor] = None
+) -> List[models.SearchQuery]:
+    sql = """
         SELECT *
         FROM search_query
         WHERE user_id = ?
-    '''
+    """
+
+    if cursor is None:
+        connection, cursor = get_connection_cursor()
     cursor.execute(sql, (user_id,))
     rows = cursor.fetchall()
 
     return rows_to_search_query_model(rows)
 
 
-def get_all_active_search_queries_by_user_id(cursor: sqlite3.Cursor,
-                                             user_id: str, date: str) \
-        -> List[models.SearchQuery]:
-    sql = '''
+def get_all_active_search_queries_by_user_id(
+        user_id: str,
+        date: datetime.datetime,
+        cursor: Optional[sqlite3.Cursor] = None,
+) -> List[models.SearchQuery]:
+    if cursor is None:
+        connection, cursor = get_connection_cursor()
+    logger.info(f"{date}: {str(date)}")
+    sql = """
             SELECT *
             FROM search_query
             WHERE user_id = ?
             AND (subscription_last_day > ?)
-        '''
-    cursor.execute(sql, (user_id, date))
+        """
+    cursor.execute(sql, (user_id, str(date)))
     rows = cursor.fetchall()
 
     return rows_to_search_query_model(rows)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     check_db_exists()

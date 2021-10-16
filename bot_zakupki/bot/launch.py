@@ -19,16 +19,22 @@ logger.add(sys.stdout, level="INFO")
 
 async def set_commands(bot: Bot):
     commands_to_set = [
-        types.BotCommand(command=commands.START, description='типа старт'),
-        types.BotCommand(command=commands.ADD_NEW_QUERY, description=commands.ADD_NEW_QUERY_DESCRIPTION),
-        types.BotCommand(command="/cancel", description="Отменить текущее действие")
+        types.BotCommand(command=commands.START, description="типа старт"),
+        types.BotCommand(
+            command=commands.ADD_NEW_QUERY,
+            description=commands.ADD_NEW_QUERY_DESCRIPTION,
+        ),
+        types.BotCommand(
+            command=commands.SHOW_ALL_MY_QUERIES,
+            description=commands.SHOW_ALL_MY_QUERIES_DESCRIPTION,
+        ),
     ]
     await bot.set_my_commands(commands_to_set)
 
 
 async def main():
     access_id = os.getenv("TELEGRAM_ACCESS_ID")
-    api_token = os.getenv('ADMIN_TELEGRAM_API_TOKEN')
+    api_token = os.getenv("ADMIN_TELEGRAM_API_TOKEN")
 
     bot = Bot(token=api_token, parse_mode="HTML")
 
@@ -45,5 +51,5 @@ async def main():
     await dp.start_polling()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

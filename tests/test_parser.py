@@ -30,7 +30,7 @@ def test_parser_page(expected_result):
     response = Response()
     response._content = str(page.read())
     results = parser.parse_result_page(response, "лифт", "Москва")
-
+    print(results[0])
     assert results[0] == expected_result
 
 

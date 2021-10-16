@@ -4,16 +4,16 @@ import re
 import typing
 
 CUSTOMER_PLACES = {
-    'Москва': '5277335',
-    'Московская область': '5277327',
-    'Дальневосточный федеральный округ': '5277399',
-    'Приволжский федеральный округ': '5277362',
-    'Северо-Западный федеральный округ': '5277336',
-    'Северо-Кавказский федеральный округ': '9409197',
-    'Сибирский федеральный округ': '5277384',
-    'Уральский федеральный округ': '5277377',
-    'Центральный федеральный округ': '5277317',
-    'Южный федеральный округ': '6325041',
+    "Москва": "5277335",
+    "Московская область": "5277327",
+    "Дальневосточный федеральный округ": "5277399",
+    "Приволжский федеральный округ": "5277362",
+    "Северо-Западный федеральный округ": "5277336",
+    "Северо-Кавказский федеральный округ": "9409197",
+    "Сибирский федеральный округ": "5277384",
+    "Уральский федеральный округ": "5277377",
+    "Центральный федеральный округ": "5277317",
+    "Южный федеральный округ": "6325041",
 }
 
 
@@ -55,16 +55,16 @@ class RequestParameters:
     close_date_from: typing.Optional[str]  # 08.08.2021
     close_date_to: typing.Optional[str]  # 09.08.2021
 
-    def to_list(self):
+    def to_list(self) -> list:
         return [
-            ('searchString', prepare_search_string(self.search_string)),
-            ('priceFromGeneral', str(self.min_price)),
-            ('priceToGeneral', str(self.max_price)),
-            ('customerPlace', CUSTOMER_PLACES.get(self.place_name)),
-            ('publishDateFrom', self.publish_date_from),
-            ('publishDateTo', self.publish_date_to),
-            ('applSubmissionCloseDateFrom', self.close_date_from),
-            ('applSubmissionCloseDateTo', self.close_date_to),
+            ("searchString", prepare_search_string(self.search_string)),
+            ("priceFromGeneral", str(self.min_price)),
+            ("priceToGeneral", str(self.max_price)),
+            ("customerPlace", CUSTOMER_PLACES.get(self.place_name)),
+            ("publishDateFrom", self.publish_date_from),
+            ("publishDateTo", self.publish_date_to),
+            ("applSubmissionCloseDateFrom", self.close_date_from),
+            ("applSubmissionCloseDateTo", self.close_date_to),
         ]
 
 

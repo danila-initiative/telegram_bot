@@ -88,7 +88,7 @@ def test_insert_new_search_query(setup_db):
 
 def test_get_all_search_queries_by_user_id(setup_db_with_data):
     cursor = setup_db_with_data
-    res = db.get_all_search_queries_by_user_id(cursor, "123456")
+    res = db.get_all_search_queries_by_user_id("123456", cursor)
 
     assert len(res) == 3
     for row in res:
@@ -98,9 +98,9 @@ def test_get_all_search_queries_by_user_id(setup_db_with_data):
 def test_get_all_active_search_queries_by_user_id(setup_db_with_data):
     today = '2021-07-15 10:10:00'
     cursor = setup_db_with_data
-    res = db.get_all_active_search_queries_by_user_id(cursor,
-                                                      '123456',
-                                                      today)
+    res = db.get_all_active_search_queries_by_user_id('123456',
+                                                      today,
+                                                      cursor)
 
     assert len(res) == 2
     for row in res:
