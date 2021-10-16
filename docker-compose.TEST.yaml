@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  telegram-bot:
+    build: .
+    restart: always
+    command: cron && tail -f /var/log/cron.log
+    volumes:
+      - ./bot_zakupki:/app/bot_zakupki
+      - ./tests:/app/tests
+      - ./db:/app/db
+      - ./logs:/app/logs
+    environment:
+      - TZ=Europe/Moscow
+      - PYTHONPATH=/app
