@@ -10,6 +10,7 @@ if [ "$?" = "0" ]; then
     echo -e "\nrun \"coverage html\" for full report"
     echo -e "\n"
 
+    black bot_zakupki
     flake8 bot_zakupki
     mypy bot_zakupki
 fi

@@ -43,18 +43,18 @@ def request_formation(custom_params: models.RequestParameters) -> str:
 
 @logger.catch
 def get_page_by_url(url: str) -> Response:
-    page = requests.get(url, headers={'User-Agent': 'Custom'})
+    page = requests.get(url, headers={"User-Agent": "Custom"})
     return page
 
 
 @logger.catch
-def parse_result_page(page: Response, search_string,
-                      location: str) \
-        -> list[models.Result]:
+def parse_result_page(
+        page: Response, search_string, location: str
+) -> list[models.Result]:
     """Return all results with key words in purchase subject"""
     results = []
 
-    soup = BS(page.content, 'html.parser')
+    soup = BS(page.content, "html.parser")
 
     number_of_records = soup.find("div", class_="search-results__total")
     number_of_records = number_of_records.text.strip().split(" ")[0]
@@ -63,10 +63,16 @@ def parse_result_page(page: Response, search_string,
         return results
 
     records = soup.find_all(
-        "div", class_="search-registry-entry-block box-shadow-search-input")
+        "div", class_="search-registry-entry-block box-shadow-search-input"
+    )
     for i in records:
         subject_of_purchase = i.find(
-            "div", class_="registry-entry__body-value").text.strip()
+            "div", class_="registry-entry__body-value"
+        ).text.strip()
+
+        subject_of_purchase = subject_of_purchase.split()
+        subject_of_purchase = " ".join(subject_of_purchase)
+
         subject_lower = subject_of_purchase.lower()
 
         key_words = search_string.lower().split(" ")
@@ -87,8 +93,9 @@ def parse_result_page(page: Response, search_string,
 
             if not key_words_in_subject:
                 logger.info(
-                    f"Key word \"{search_string}\" "
-                    f"not in subject \"{subject_of_purchase}\"")
+                    f'Key word "{search_string}" '
+                    f'not in subject "{subject_of_purchase}"'
+                )
                 continue
 
         number = i.find("div", class_="registry-entry__header-mid__number")
@@ -102,9 +109,11 @@ def parse_result_page(page: Response, search_string,
 
         print(f"price: {int(new_price)}")
 
-        customer = i.find("div",
-                          class_="registry-entry__body-href").text.strip()
-        customer = customer.replace("\n", "")
+        customer = i.find(
+            "div", class_="registry-entry__body-href"
+        ).text.strip()
+        customer = customer.split()
+        customer = " ".join(customer)
 
         all_dates = i.find_all("div", class_="data-block__value")
         finish_date = all_dates[-1].text.strip()
@@ -115,17 +124,18 @@ def parse_result_page(page: Response, search_string,
         if link.startswith("/epz"):
             link = addition + link
 
-        results.append(models.Result(
-            search_string=search_string,
-            number_of_purchase=number_of_purchase,
-            publish_date=dates.res_date_to_datetime(publish_date),
-            finish_date=dates.res_date_to_datetime(finish_date),
-            price=int(new_price),
-            subject_of_purchase=subject_of_purchase,
-            link=link,
-            customer=customer,
-            location=location,
-        )
+        results.append(
+            models.Result(
+                search_string=search_string,
+                number_of_purchase=number_of_purchase,
+                publish_date=dates.res_date_to_datetime(publish_date),
+                finish_date=dates.res_date_to_datetime(finish_date),
+                price=int(new_price),
+                subject_of_purchase=subject_of_purchase,
+                link=link,
+                customer=customer,
+                location=location,
+            )
         )
 
     return results
