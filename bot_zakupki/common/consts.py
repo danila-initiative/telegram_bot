@@ -4,7 +4,7 @@ TIME_ZONE = 'Europe/Moscow'
 
 LOG_FILE = '/code/logs/log_'
 
-PATH_TO_DB = 'db/bot.db'
+PATH_TO_DB = 'db/bot.sqlite'
 PATH_TO_MIGRATIONS = 'bot_zakupki/storage/migrations'
 PATH_TO_QUERIES = 'bot_zakupki/storage/queries'
 TABLES_NAME = ['result', 'search_query']

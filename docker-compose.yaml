@@ -12,3 +12,6 @@ services:
       - ./logs:/app/logs
     environment:
       - TZ=Europe/Moscow
+      - TELEGRAM_ACCESS_ID=70365850
+      - ADMIN_TELEGRAM_API_TOKEN=1665844597:AAEgUP-QDp67bQ-yCYATgvMhGVAKefn2iRA
+      - PYTHONPATH=/app

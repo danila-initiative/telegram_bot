@@ -11,6 +11,7 @@ if [ "$?" = "0" ]; then
     echo -e "\n"
 
     flake8 bot_zakupki
+    mypy bot_zakupki
 fi
 
 

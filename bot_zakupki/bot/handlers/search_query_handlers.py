@@ -47,6 +47,8 @@ async def new_query(message: types.Message):
     await message.answer(messages.NEW_QUERY_MSG, reply_markup=types.ReplyKeyboardRemove())
 
 
+# ========== SEARCH STRING ==========
+
 async def process_search_string(message: types.Message, state: FSMContext):
     await state.update_data(search_string=message.text.lower())
     await SearchParameters.location.set()
@@ -55,47 +57,54 @@ async def process_search_string(message: types.Message, state: FSMContext):
     for place in models.CUSTOMER_PLACES:
         keyboard.add(place)
 
-    await message.reply(messages.SELECT_LOCATION, reply_markup=keyboard)
+    await message.answer(messages.SELECT_LOCATION, reply_markup=keyboard)
 
 
-async def process_location_invalid(message: types.Message, state: FSMContext):
-    await message.reply('Неверно указан регион для поиска. Выберите регион из перечисленных ниже')
-
+# ========== LOCATION ==========
 
 async def process_location(message: types.Message, state: FSMContext):
-    await state.update_data(location=message.text.lower())
+    await state.update_data(location=message.text)
     await SearchParameters.min_price.set()
 
     markup = types.ReplyKeyboardRemove()
 
-    await message.answer("Теперь введите минимальную цену в рублях", reply_markup=markup)
+    await message.answer(messages.SET_MINIMUM_PRICE, reply_markup=markup)
 
 
-async def process_min_price_invalid(message: types.Message, state: FSMContext):
-    await message.reply('Неверно указана минимальная цена для поиска.')
+async def process_location_invalid(message: types.Message):
+    await message.reply(messages.SELECT_LOCATION_INVALID)
 
+
+# ========== PRICE ==========
 
 async def process_min_price(message: types.Message, state: FSMContext):
     await state.update_data(min_price=int(message.text))
     await SearchParameters.max_price.set()
 
-    await message.answer("Теперь введите максимальную цену в рублях")
+    await message.answer(messages.SET_MAXIMUM_PRICE)
 
 
-async def process_max_price_invalid(message: types.Message, state: FSMContext):
-    await message.reply('Максимальная цена должна быть целым числом')
+async def process_min_price_invalid(message: types.Message):
+    await message.reply(messages.SET_MINIMUM_PRICE_INVALID)
 
 
 async def process_max_price(message: types.Message, state: FSMContext):
     data = await state.get_data()
     if int(message.text) < data["min_price"]:
-        await message.reply('Максимальная цена меньше минимальной. Введите другое число')
+        await message.reply(messages.SET_MAX_PRICE_LESS_THAN_MIN)
         return
 
     data["max_price"] = int(message.text)
 
-    await message.answer(f'Строка для поиска: {data["search_string"]} \n'
-                         f'регион: {data["location"]} \n'
-                         f'диапазон цен для поиска: от {data["min_price"]} до {data["max_price"]}')
+    query_data_message = messages.query_message_formation(data["search_string"],
+                                                          data["location"],
+                                                          data["min_price"],
+                                                          data["max_price"])
+
+    await message.answer(query_data_message)
 
     await state.finish()
+
+
+async def process_max_price_invalid(message: types.Message):
+    await message.reply(messages.SET_MAX_PRICE_INVALID)
