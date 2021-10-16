@@ -1,15 +1,20 @@
 import asyncio
 import os
+import sys
 
 from aiogram import Bot
 from aiogram import Dispatcher
 from aiogram import types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from loguru import logger
 
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import common_handlers
 from bot_zakupki.bot.handlers import search_query_handlers
 from bot_zakupki.bot.middlewares import AccessMiddleware
+
+logger.remove()
+logger.add(sys.stdout, level="INFO")
 
 
 async def set_commands(bot: Bot):
@@ -25,7 +30,7 @@ async def main():
     access_id = os.getenv("TELEGRAM_ACCESS_ID")
     api_token = os.getenv('ADMIN_TELEGRAM_API_TOKEN')
 
-    bot = Bot(token=api_token)
+    bot = Bot(token=api_token, parse_mode="HTML")
 
     storage = MemoryStorage()
     dp = Dispatcher(bot, storage=storage)

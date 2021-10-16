@@ -1,6 +1,7 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
+from loguru import logger
 
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
@@ -13,6 +14,7 @@ def register_handlers_common(dp: Dispatcher):
 
 
 async def cmd_start(message: types.Message, state: FSMContext):
+    logger.info(f"{__name__} is working")
     await state.finish()
     await message.answer(messages.CMD_START_MSG, reply_markup=types.ReplyKeyboardRemove())
 
