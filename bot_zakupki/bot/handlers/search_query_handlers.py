@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State
@@ -5,6 +7,7 @@ from aiogram.dispatcher.filters.state import StatesGroup
 
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
+from bot_zakupki.common import db
 from bot_zakupki.common import models
 
 
@@ -95,6 +98,19 @@ async def process_max_price(message: types.Message, state: FSMContext):
         return
 
     data["max_price"] = int(message.text)
+
+    now = datetime.datetime.now().replace(microsecond=0)
+    last_sub_day = now + datetime.timedelta(days=7)
+
+    query = {
+        "user_id": message.from_user.id,
+        "search_string": data["search_string"],
+        "location": data["location"],
+        "min_price": data["min_price"],
+        "max_price": data["max_price"],
+        "subscription_last_day": last_sub_day,
+    }
+    db.insert_new_search_query(cursor=None, connection=None, column_values=query)
 
     query_data_message = messages.query_message_formation(data["search_string"],
                                                           data["location"],
