@@ -10,6 +10,7 @@ services:
       - ./tests:/app/tests
       - ./db:/app/db
       - ./logs:/app/logs
+      - ./htmlcov:/app/htmlcov
     environment:
       - TZ=Europe/Moscow
       - TELEGRAM_ACCESS_ID=70365850

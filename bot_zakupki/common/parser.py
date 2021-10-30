@@ -1,4 +1,7 @@
+# type: ignore
 # import pandas as pd
+from typing import Optional
+
 import requests
 from bs4 import BeautifulSoup as BS
 from loguru import logger
@@ -50,9 +53,9 @@ def get_page_by_url(url: str) -> Response:
 @logger.catch
 def parse_result_page(
         page: Response, search_string, location: str
-) -> list[models.Result]:
+) -> Optional[list[models.Result]]:
     """Return all results with key words in purchase subject"""
-    results = []
+    results = list()
 
     soup = BS(page.content, "html.parser")
 
@@ -60,7 +63,7 @@ def parse_result_page(
     number_of_records = number_of_records.text.strip().split(" ")[0]
 
     if number_of_records == 0:
-        return results
+        return
 
     records = soup.find_all(
         "div", class_="search-registry-entry-block box-shadow-search-input"

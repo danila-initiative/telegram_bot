@@ -1,6 +1,5 @@
 import dataclasses
 import datetime
-import re
 import typing
 
 CUSTOMER_PLACES = {
@@ -23,12 +22,12 @@ class SearchQuery:
     user_id: str
     search_string: str
     location: str
-    min_price: int
-    max_price: typing.Optional[int]
     created_at: datetime.datetime
     subscription_last_day: datetime.datetime
     payment_last_day: datetime.datetime
     deleted: bool
+    min_price: typing.Optional[int] = None
+    max_price: typing.Optional[int] = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -47,13 +46,13 @@ class Result:
 @dataclasses.dataclass()
 class RequestParameters:
     search_string: str  # современная школа
-    min_price: int  # 100000
-    max_price: int  # 500000
     place_name: str  # Москва
     publish_date_from: typing.Optional[str]  # 06.08.2021
     publish_date_to: typing.Optional[str]  # 07.08.2021
     close_date_from: typing.Optional[str]  # 08.08.2021
     close_date_to: typing.Optional[str]  # 09.08.2021
+    min_price: typing.Optional[int] = None  # 100000
+    max_price: typing.Optional[int] = None  # 500000
 
     def to_list(self) -> list:
         return [
@@ -69,8 +68,7 @@ class RequestParameters:
 
 
 def prepare_search_string(raw_string: str) -> str:
-    search_string = re.sub(" +", " ", raw_string)
-    search_string = search_string.strip()
-    search_string = "+".join(search_string.split(" "))
+    search_list = raw_string.split()
+    search_string = "+".join(search_list)
 
     return search_string

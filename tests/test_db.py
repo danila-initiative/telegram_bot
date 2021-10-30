@@ -12,7 +12,7 @@ from bot_zakupki.common import models
 def setup_db():
     conn = sqlite3.connect(':memory:')
     cursor = conn.cursor()
-    db.init_db(conn, cursor)
+    db.init_db(connection=conn, cursor=cursor)
 
     yield conn
     conn.close()
@@ -49,7 +49,7 @@ def setup_db_with_data(setup_db):
 
     queries = [query_1, query_2, query_3, query_4]
     for query in queries:
-        db.insert_new_search_query(setup_db, cursor, query)
+        db.insert_new_search_query(column_values=query, connection=setup_db, cursor=cursor)
 
     yield cursor
 
@@ -63,7 +63,7 @@ def test_insert_new_search_query(setup_db):
         "location": "Москва"
     }
 
-    db.insert_new_search_query(setup_db, cursor, data)
+    db.insert_new_search_query(column_values=data, connection=setup_db, cursor=cursor)
     res_after = db.get_all_search_queries(cursor)
 
     now = datetime.datetime.now().replace(microsecond=0)
@@ -75,7 +75,6 @@ def test_insert_new_search_query(setup_db):
         search_string='search_string',
         location='Москва',
         min_price=0,
-        max_price=None,
         created_at=now,
         subscription_last_day=last_sub_day,
         payment_last_day=now,

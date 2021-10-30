@@ -1,3 +1,4 @@
+# type: ignore
 """Аутентификация — пропускаем сообщения только от определенного id"""
 from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler

@@ -1,9 +1,10 @@
 import datetime
 import os
 import sqlite3
-from sqlite3 import Error
-from typing import Dict, List, Tuple
+from typing import Dict
+from typing import List
 from typing import Optional
+from typing import Tuple
 
 from loguru import logger
 
@@ -14,26 +15,23 @@ from bot_zakupki.common import models
 
 # ===============Common===============
 
-
 def get_connection_cursor(
-        path: str = consts.PATH_TO_DB,
-) -> (sqlite3.Connection, sqlite3.Cursor):
-    connection = sqlite3.Connection
-    cursor = sqlite3.Cursor
-    try:
-        connection = sqlite3.connect(path)
-        logger.info("Connection to SQLite DB successful")
-        cursor = connection.cursor()
-        logger.info("Cursor to SQLite DB successful")
-    except Error as e:
-        logger.exception(f"The error '{e}' occurred")
+        path_to_db: str = consts.PATH_TO_DB,
+):
+    connection = sqlite3.connect(path_to_db)
+    logger.info("Connection to SQLite DB successful")
+    cursor = connection.cursor()
+    logger.info("Cursor to SQLite DB successful")
 
     return connection, cursor
 
 
+base_con, base_cursor = get_connection_cursor()
+
+
 def init_db(
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
+        connection: sqlite3.Connection = base_con,
+        cursor: sqlite3.Cursor = base_cursor,
         path_to_migrations: str = consts.PATH_TO_MIGRATIONS,
 ):
     """Инициализирует БД"""
@@ -47,10 +45,9 @@ def init_db(
         connection.commit()
 
 
-def check_db_exists(path_to_db: str = consts.PATH_TO_DB):
+def check_db_exists(
+        cursor: sqlite3.Cursor = base_cursor):
     """Проверяет, инициализирована ли БД, если нет — инициализирует"""
-    connection, cursor = get_connection_cursor(path_to_db)
-
     for table_name in consts.TABLES_NAME:
         cursor.execute(
             "SELECT name FROM sqlite_master "
@@ -58,7 +55,7 @@ def check_db_exists(path_to_db: str = consts.PATH_TO_DB):
         )
         table_exists = cursor.fetchall()
         if not table_exists:
-            init_db(connection, cursor)
+            init_db()
 
 
 # ===============search_query===============
@@ -86,12 +83,10 @@ def rows_to_search_query_model(rows: List[Tuple]) -> List[models.SearchQuery]:
 
 
 def insert_new_search_query(
-        connection: Optional[sqlite3.Connection],
-        cursor: Optional[sqlite3.Cursor],
         column_values: Dict,
+        connection: sqlite3.Connection = base_con,
+        cursor: sqlite3.Cursor = base_cursor,
 ):
-    if not connection and not cursor:
-        connection, cursor = get_connection_cursor()
     columns = ", ".join(column_values.keys())
     values = [tuple(column_values.values())]
     placeholders = ", ".join("?" * len(column_values.keys()))
@@ -104,7 +99,8 @@ def insert_new_search_query(
     connection.commit()
 
 
-def get_all_search_queries(cursor: sqlite3.Cursor) -> List[models.SearchQuery]:
+def get_all_search_queries(cursor: sqlite3.Cursor = base_cursor) \
+        -> List[models.SearchQuery]:
     sql = "SELECT * FROM search_query"
     cursor.execute(sql)
     rows = cursor.fetchall()
