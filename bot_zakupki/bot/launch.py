@@ -21,6 +21,7 @@ logger.add(sys.stdout, level="INFO")
 async def set_commands(bot: Bot):
     commands_to_set = [
         types.BotCommand(command=commands.START, description="типа старт"),
+        types.BotCommand(command=commands.STOP, description="деактивация"),
         types.BotCommand(
             command=commands.ADD_NEW_QUERY,
             description=commands.ADD_NEW_QUERY_DESCRIPTION,

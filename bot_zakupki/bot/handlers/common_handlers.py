@@ -16,6 +16,7 @@ def register_handlers_common(dp: Dispatcher):
     dp.register_message_handler(
         cmd_start, commands=[commands.START, "/help"], state="*"
     )
+    dp.register_message_handler(cmd_stop, commands=commands.STOP, state="*")
     dp.register_message_handler(
         cmd_show_all_my_queries, commands=[commands.SHOW_ALL_MY_QUERIES]
     )
@@ -29,9 +30,32 @@ def register_handlers_common(dp: Dispatcher):
 
 async def cmd_start(message: types.Message, state: FSMContext):
     logger.info(f"{__name__} is working")
+
+    user_id = message.from_user.id
+    user = db.get_user_by_user_id(user_id=user_id)
+    if user is None:
+        db.insert_new_user(user_id=user_id)
+    elif not user.bot_is_active:
+        logger.info(f"user {user_id} was not active")
+        now = datetime.datetime.now().replace(microsecond=0)
+        data = {"bot_start_date": now, "bot_is_active": 1}
+        db.update_user_by_user_id(user_id=user_id, column_values=data)
+
     await state.finish()
     await message.answer(
         messages.CMD_START_MSG, reply_markup=types.ReplyKeyboardRemove()
+    )
+
+
+async def cmd_stop(message: types.Message):
+    logger.info(f"{__name__} is working")
+
+    user_id = message.from_user.id
+    data = {"bot_is_active": 0}
+    db.update_user_by_user_id(user_id=user_id, column_values=data)
+    await message.answer(
+        f"user {user_id} is not active",
+        reply_markup=types.ReplyKeyboardRemove(),
     )
 
 

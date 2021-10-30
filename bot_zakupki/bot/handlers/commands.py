@@ -1,5 +1,6 @@
 # Common commands
 START = "start"
+STOP = "stop"
 INFO = "info"
 CANCEL = "cancel"
 
