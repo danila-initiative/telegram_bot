@@ -1,3 +1,4 @@
+# type: ignore
 import datetime
 
 from aiogram import Dispatcher, types
@@ -133,7 +134,7 @@ async def process_max_price(message: types.Message, state: FSMContext):
         "subscription_last_day": last_sub_day,
     }
     db.insert_new_search_query(
-        cursor=None, connection=None, column_values=query
+        column_values=query
     )
 
     query_data_message = messages.query_message_formation(

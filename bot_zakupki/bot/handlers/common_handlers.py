@@ -1,3 +1,4 @@
+# type: ignore
 import datetime
 
 from aiogram import Dispatcher, types
@@ -36,9 +37,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 async def cmd_show_all_my_queries(message: types.Message):
     now = datetime.datetime.now().replace(microsecond=0)
-    last_sub_day = now + datetime.timedelta(days=6)
     queries = db.get_all_active_search_queries_by_user_id(
-        message.from_user.id, last_sub_day
+        message.from_user.id, now
     )
     answer = ""
     if not queries:
