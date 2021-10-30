@@ -133,9 +133,7 @@ async def process_max_price(message: types.Message, state: FSMContext):
         "max_price": data["max_price"],
         "subscription_last_day": last_sub_day,
     }
-    db.insert_new_search_query(
-        column_values=query
-    )
+    db.insert_new_search_query(column_values=query)
 
     query_data_message = messages.query_message_formation(
         data["search_string"],

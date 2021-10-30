@@ -18,6 +18,47 @@ def setup_db():
     conn.close()
 
 
+# ========== user ==========
+
+def test_get_insert_update_user_by_user_id(setup_db):
+    cursor = setup_db.cursor()
+    result = db.get_user_by_user_id('1111', cursor=cursor)
+    assert result is None
+
+    results = db.get_all_users(cursor=cursor)
+    assert results is None
+
+    # insert users
+    user_ids = ['1111', '2222', '3333']
+    for user_id in user_ids:
+        db.insert_new_user(user_id=user_id,
+                           connection=setup_db,
+                           cursor=cursor)
+    results = db.get_all_users(cursor=cursor)
+    assert len(results) == 3
+
+    user_2222 = db.get_user_by_user_id('2222', cursor=cursor)
+    assert user_2222.user_id == '2222'
+    assert user_2222.id == 2
+    assert user_2222.bot_is_active
+
+    # update
+    new_data = {'bot_is_active': 0,
+                'number_of_active_search_queries': 5}
+    db.update_user_by_user_id(user_id='2222',
+                              column_values=new_data,
+                              connection=setup_db,
+                              cursor=cursor)
+    user_2222 = db.get_user_by_user_id('2222', cursor=cursor)
+    assert user_2222.user_id == '2222'
+    assert user_2222.id == 2
+    assert user_2222.number_of_active_search_queries == 5
+    assert not user_2222.bot_is_active
+
+
+# ========== search_query ==========
+
+
 @pytest.fixture(scope='function')
 def setup_db_with_data(setup_db):
     cursor = setup_db.cursor()
@@ -98,7 +139,7 @@ def test_get_all_active_search_queries_by_user_id(setup_db_with_data):
     today = '2021-07-15 10:10:00'
     cursor = setup_db_with_data
     res = db.get_all_active_search_queries_by_user_id('123456',
-                                                      today,
+                                                      dates.sqlite_date_to_datetime(today),
                                                       cursor)
 
     assert len(res) == 2

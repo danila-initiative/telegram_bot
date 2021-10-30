@@ -17,6 +17,21 @@ CUSTOMER_PLACES = {
 
 
 @dataclasses.dataclass(frozen=True)
+class User:
+    id: int
+    user_id: str
+    first_bot_start_date: datetime.datetime
+    bot_start_date: datetime.datetime
+    bot_is_active: bool
+    trial_start_date: typing.Optional[datetime.datetime]
+    trial_end_date: typing.Optional[datetime.datetime]
+    number_of_sending: int
+    number_of_active_search_queries: int
+    number_of_search_queries: int
+    downtime_notification: bool
+
+
+@dataclasses.dataclass(frozen=True)
 class SearchQuery:
     id: int
     user_id: str
