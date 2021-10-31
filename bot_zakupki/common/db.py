@@ -152,6 +152,13 @@ def rows_to_search_query_model(rows: List[Tuple]) -> List[models.SearchQuery]:
     queries = []
 
     for row in rows:
+        subscription_last_day = None
+        payment_last_day = None
+        if row[7] is not None:
+            subscription_last_day = dates.sqlite_date_to_datetime(row[7])
+        if row[8] is not None:
+            payment_last_day = dates.sqlite_date_to_datetime(row[8])
+
         search_query = models.SearchQuery(
             id=row[0],
             user_id=row[1],
@@ -160,8 +167,8 @@ def rows_to_search_query_model(rows: List[Tuple]) -> List[models.SearchQuery]:
             min_price=row[4],
             max_price=row[5],
             created_at=dates.sqlite_date_to_datetime(row[6]),
-            subscription_last_day=dates.sqlite_date_to_datetime(row[7]),
-            payment_last_day=dates.sqlite_date_to_datetime(row[8]),
+            subscription_last_day=subscription_last_day,
+            payment_last_day=payment_last_day,
             deleted=bool(row[9]),
         )
         queries.append(search_query)
@@ -178,9 +185,7 @@ def insert_new_search_query(
     values = [tuple(column_values.values())]
     placeholders = ", ".join("?" * len(column_values.keys()))
     cursor.executemany(
-        f"INSERT INTO search_query "
-        f"({columns}) "
-        f"VALUES ({placeholders})",
+        f"INSERT INTO search_query " f"({columns}) " f"VALUES ({placeholders})",
         values,
     )
     connection.commit()

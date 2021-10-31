@@ -1,6 +1,10 @@
 # Common commands
 START = "start"
+START_DESCRIPTION = "типа старт"
+
 STOP = "stop"
+STOP_DESCRIPTION = "Имитация деактивации бота"
+
 INFO = "info"
 CANCEL = "cancel"
 
