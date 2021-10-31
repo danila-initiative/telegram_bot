@@ -20,15 +20,14 @@ def register_handlers_common(dp: Dispatcher):
     dp.register_message_handler(
         cmd_show_all_my_queries, commands=[commands.SHOW_ALL_MY_QUERIES]
     )
-    dp.register_message_handler(
-        cmd_cancel, commands=commands.CANCEL, state="*"
-    )
+    dp.register_message_handler(cmd_cancel, commands=commands.CANCEL, state="*")
     dp.register_message_handler(
         cmd_cancel, Text(equals="отмена", ignore_case=True), state="*"
     )
 
 
 async def cmd_start(message: types.Message, state: FSMContext):
+    await state.finish()
     logger.info(f"{__name__} is working")
 
     user_id = message.from_user.id
@@ -41,13 +40,13 @@ async def cmd_start(message: types.Message, state: FSMContext):
         data = {"bot_start_date": now, "bot_is_active": 1}
         db.update_user_by_user_id(user_id=user_id, column_values=data)
 
-    await state.finish()
     await message.answer(
         messages.CMD_START_MSG, reply_markup=types.ReplyKeyboardRemove()
     )
 
 
-async def cmd_stop(message: types.Message):
+async def cmd_stop(message: types.Message, state: FSMContext):
+    await state.finish()
     logger.info(f"{__name__} is working")
 
     user_id = message.from_user.id
@@ -59,7 +58,8 @@ async def cmd_stop(message: types.Message):
     )
 
 
-async def cmd_show_all_my_queries(message: types.Message):
+async def cmd_show_all_my_queries(message: types.Message, state: FSMContext):
+    await state.finish()
     now = datetime.datetime.now().replace(microsecond=0)
     queries = db.get_all_active_search_queries_by_user_id(
         message.from_user.id, now

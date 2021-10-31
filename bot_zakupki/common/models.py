@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import typing
+from enum import Enum
 
 CUSTOMER_PLACES = {
     "Москва": "5277335",
@@ -38,11 +39,17 @@ class SearchQuery:
     search_string: str
     location: str
     created_at: datetime.datetime
-    subscription_last_day: datetime.datetime
-    payment_last_day: datetime.datetime
+    subscription_last_day: typing.Optional[datetime.datetime]
+    payment_last_day: typing.Optional[datetime.datetime]
     deleted: bool
-    min_price: typing.Optional[int] = None
-    max_price: typing.Optional[int] = None
+    min_price: typing.Optional[int]
+    max_price: typing.Optional[int]
+
+
+class TrialPeriodState(str, Enum):
+    TRIAL_PERIOD_HAS_NOT_STARTED = "trial_period_has_not_started"
+    TRIAL_PERIOD = "trial_period"
+    TRIAL_PERIOD_IS_OVER = "trial_period_is_over"
 
 
 @dataclasses.dataclass(frozen=True)

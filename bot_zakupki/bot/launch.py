@@ -13,15 +13,23 @@ from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import common_handlers
 from bot_zakupki.bot.handlers import search_query_handlers
 from bot_zakupki.bot.middlewares import AccessMiddleware
+from bot_zakupki.common import consts
 
 logger.remove()
-logger.add(sys.stdout, level="INFO")
+if consts.DEBUG:
+    logger.add(sys.stdout, level="DEBUG")
+else:
+    logger.add(sys.stdout, level="INFO")
 
 
 async def set_commands(bot: Bot):
     commands_to_set = [
-        types.BotCommand(command=commands.START, description="типа старт"),
-        types.BotCommand(command=commands.STOP, description="деактивация"),
+        types.BotCommand(
+            command=commands.START, description=commands.START_DESCRIPTION
+        ),
+        types.BotCommand(
+            command=commands.STOP, description=commands.STOP_DESCRIPTION
+        ),
         types.BotCommand(
             command=commands.ADD_NEW_QUERY,
             description=commands.ADD_NEW_QUERY_DESCRIPTION,
