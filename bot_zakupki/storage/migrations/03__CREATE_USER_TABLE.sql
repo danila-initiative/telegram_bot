@@ -7,7 +7,5 @@ CREATE TABLE IF NOT EXISTS user(
     trial_start_date TIMESTAMP DEFAULT NULL,
     trial_end_date TIMESTAMP DEFAULT NULL,
     number_of_sending INTEGER DEFAULT 0,
-    number_of_active_search_queries INTEGER DEFAULT 0,
-    number_of_search_queries INTEGER DEFAULT 0,
     downtime_notification INTEGER DEFAULT 0
 );

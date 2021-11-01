@@ -65,15 +65,32 @@ def register_handlers_search_query(dp: Dispatcher):
 
 
 async def new_query(message: types.Message):
-    user = db.get_user_by_user_id(user_id=message.from_user.id)
+    user_id = message.from_user.id
+    user = db.get_user_by_user_id(user_id=user_id)
     now = datetime.datetime.now().replace(microsecond=0)
+
     trial_period_state = user_info.get_trial_period_state(user=user, date=now)
+
+    search_queries = db.get_all_search_queries_by_user_id(user_id)
+    number_of_search_queries = len(search_queries)
+
+    now = datetime.datetime.now().replace(microsecond=0)
+    active_search_queries = db.get_all_active_search_queries_by_user_id(
+        user_id=user_id, date=now
+    )
+    number_of_active_search_queries = len(active_search_queries)
+
+    logger.debug(f"trial period state: {trial_period_state}")
+    logger.debug(f"number_of_search_queries: {number_of_search_queries}")
+    logger.debug(
+        f"number_of_active_search_queries: {number_of_active_search_queries}"
+    )
 
     # пробный период
     # нельзя добавить больше 3-х запросов
     if (
             trial_period_state == models.TrialPeriodState.TRIAL_PERIOD
-            and user.number_of_active_search_queries == 3
+            and number_of_active_search_queries == 3
     ):
         await message.answer(
             messages.CANNOT_ADD_MORE_QUERY_IN_TRIAL_PERIOD,
@@ -85,9 +102,12 @@ async def new_query(message: types.Message):
     # нельзя добавить больше 5 неактивных запросов
     if (
             trial_period_state == models.TrialPeriodState.TRIAL_PERIOD_IS_OVER
-            and user.number_of_search_queries - user.number_of_active_search_queries
-            >= 5
+            and number_of_search_queries - number_of_active_search_queries >= 5
     ):
+        logger.debug(
+            f"number of active queries: {number_of_active_search_queries}; "
+            f"number of all queries: {number_of_search_queries}"
+        )
         await message.answer(
             messages.TOO_MANY_NOT_ACTIVE_QUERIES,
             reply_markup=types.ReplyKeyboardRemove(),
@@ -148,7 +168,7 @@ async def process_min_price_invalid(message: types.Message):
 async def process_max_price(message: types.Message, state: FSMContext):
     additional_message = ""
     data = await state.get_data()
-    if int(message.text) < data["min_price"]:
+    if int(message.text) <= data["min_price"]:
         await message.reply(messages.SET_MAX_PRICE_LESS_THAN_MIN)
         return
 
@@ -162,15 +182,14 @@ async def process_max_price(message: types.Message, state: FSMContext):
         "max_price": data["max_price"],
     }
 
-    user = db.get_user_by_user_id(user_id=message.from_user.id)
+    user_id = message.from_user.id
+
+    user = db.get_user_by_user_id(user_id=user_id)
     now = datetime.datetime.now().replace(microsecond=0)
     trial_period_state = user_info.get_trial_period_state(user=user, date=now)
 
-    now = datetime.datetime.now().replace(microsecond=0)
-
     # пробный период не начался
     # добавляем дату начала и окончания пробного периода
-    # увеличиваем количество активных и общих подписок
     if (
             trial_period_state
             == models.TrialPeriodState.TRIAL_PERIOD_HAS_NOT_STARTED
@@ -180,9 +199,6 @@ async def process_max_price(message: types.Message, state: FSMContext):
         user_data_update = {
             "trial_start_date": now,
             "trial_end_date": last_sub_day,
-            "number_of_active_search_queries":
-                user.number_of_active_search_queries + 1,
-            "number_of_search_queries": user.number_of_search_queries + 1,
         }
         db.update_user_by_user_id(
             user_id=message.from_user.id, column_values=user_data_update
@@ -194,14 +210,6 @@ async def process_max_price(message: types.Message, state: FSMContext):
     # сейчас пробный период
     # дата окончания подписки - дата окончания пробного периода
     if trial_period_state == models.TrialPeriodState.TRIAL_PERIOD:
-        user_data_update = {
-            "number_of_active_search_queries":
-                user.number_of_active_search_queries + 1,
-            "number_of_search_queries": user.number_of_search_queries + 1,
-        }
-        db.update_user_by_user_id(
-            user_id=message.from_user.id, column_values=user_data_update
-        )
         last_sub_day = user.trial_end_date
 
         query["subscription_last_day"] = last_sub_day
@@ -209,13 +217,7 @@ async def process_max_price(message: types.Message, state: FSMContext):
 
     # пробный период закончился
     if trial_period_state == models.TrialPeriodState.TRIAL_PERIOD_IS_OVER:
-        logger.debug(f'trial period if over for user {message.from_user.id}')
-        user_data_update = {
-            "number_of_search_queries": user.number_of_search_queries + 1
-        }
-        db.update_user_by_user_id(
-            user_id=message.from_user.id, column_values=user_data_update
-        )
+        logger.debug(f"trial period if over for user {message.from_user.id}")
         additional_message = "Оплатить новый запрос можно по ссылке: link"
 
     db.insert_new_search_query(column_values=query)

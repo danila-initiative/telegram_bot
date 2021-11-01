@@ -112,7 +112,9 @@ def parse_result_page(
 
         print(f"price: {int(new_price)}")
 
-        customer = i.find("div", class_="registry-entry__body-href").text.strip()
+        customer = i.find(
+            "div", class_="registry-entry__body-href"
+        ).text.strip()
         customer = customer.split()
         customer = " ".join(customer)
 

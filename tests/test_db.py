@@ -43,8 +43,7 @@ def test_get_insert_update_user_by_user_id(setup_db):
     assert user_2222.bot_is_active
 
     # update
-    new_data = {'bot_is_active': 0,
-                'number_of_active_search_queries': 5}
+    new_data = {'bot_is_active': 0}
     db.update_user_by_user_id(user_id='2222',
                               column_values=new_data,
                               connection=setup_db,
@@ -52,7 +51,6 @@ def test_get_insert_update_user_by_user_id(setup_db):
     user_2222 = db.get_user_by_user_id('2222', cursor=cursor)
     assert user_2222.user_id == '2222'
     assert user_2222.id == 2
-    assert user_2222.number_of_active_search_queries == 5
     assert not user_2222.bot_is_active
 
 

@@ -1,6 +1,6 @@
 import os
 
-TEST_PERIOD = 14
+TEST_PERIOD = 10
 PUBLISH_DELTA = -1
 CLOSE_DELTA = 5
 

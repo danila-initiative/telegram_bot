@@ -8,6 +8,7 @@ from loguru import logger
 
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
+from bot_zakupki.common import consts
 from bot_zakupki.common import dates
 from bot_zakupki.common import db
 
@@ -16,19 +17,30 @@ def register_handlers_common(dp: Dispatcher):
     dp.register_message_handler(
         cmd_start, commands=[commands.START, "/help"], state="*"
     )
-    dp.register_message_handler(cmd_stop, commands=commands.STOP, state="*")
     dp.register_message_handler(
         cmd_show_all_my_queries, commands=[commands.SHOW_ALL_MY_QUERIES]
     )
-    dp.register_message_handler(cmd_cancel, commands=commands.CANCEL, state="*")
+    dp.register_message_handler(
+        cmd_cancel, commands=commands.CANCEL, state="*"
+    )
     dp.register_message_handler(
         cmd_cancel, Text(equals="отмена", ignore_case=True), state="*"
     )
 
+    if consts.DEBUG:
+        dp.register_message_handler(
+            cmd_stop, commands=commands.STOP, state="*"
+        )
+        dp.register_message_handler(
+            cmd_end_trial_period, commands=commands.END_TRIAL_PERIOD, state="*"
+        )
+
 
 async def cmd_start(message: types.Message, state: FSMContext):
     await state.finish()
-    logger.info(f"{__name__} is working")
+    logger.info(
+        f'Command "/{commands.START}" was used by user {message.from_user.id}'
+    )
 
     user_id = message.from_user.id
     user = db.get_user_by_user_id(user_id=user_id)
@@ -42,19 +54,6 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     await message.answer(
         messages.CMD_START_MSG, reply_markup=types.ReplyKeyboardRemove()
-    )
-
-
-async def cmd_stop(message: types.Message, state: FSMContext):
-    await state.finish()
-    logger.info(f"{__name__} is working")
-
-    user_id = message.from_user.id
-    data = {"bot_is_active": 0}
-    db.update_user_by_user_id(user_id=user_id, column_values=data)
-    await message.answer(
-        f"user {user_id} is not active",
-        reply_markup=types.ReplyKeyboardRemove(),
     )
 
 
@@ -87,3 +86,29 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
     await message.answer(
         "Действие отменено", reply_markup=types.ReplyKeyboardRemove()
     )
+
+
+async def cmd_stop(message: types.Message, state: FSMContext):
+    await state.finish()
+    logger.info(
+        f'Command "/{commands.STOP}" was used by user {message.from_user.id}'
+    )
+
+    user_id = message.from_user.id
+    data = {"bot_is_active": 0}
+    db.update_user_by_user_id(user_id=user_id, column_values=data)
+    await message.answer(
+        f"user {user_id} is not active",
+        reply_markup=types.ReplyKeyboardRemove(),
+    )
+
+
+async def cmd_end_trial_period(message: types.Message, state: FSMContext):
+    await state.finish()
+    logger.info(
+        f'Command "/{commands.END_TRIAL_PERIOD}" '
+        f'was used by user {message.from_user.id}'
+    )
+    user_id = message.from_user.id
+
+    db.imitate_trial_period_end(user_id=user_id)

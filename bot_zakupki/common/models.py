@@ -27,8 +27,6 @@ class User:
     trial_start_date: typing.Optional[datetime.datetime]
     trial_end_date: typing.Optional[datetime.datetime]
     number_of_sending: int
-    number_of_active_search_queries: int
-    number_of_search_queries: int
     downtime_notification: bool
 
 

@@ -2,9 +2,6 @@
 START = "start"
 START_DESCRIPTION = "типа старт"
 
-STOP = "stop"
-STOP_DESCRIPTION = "Имитация деактивации бота"
-
 INFO = "info"
 CANCEL = "cancel"
 
@@ -15,3 +12,10 @@ ADD_NEW_QUERY_DESCRIPTION = "Добавить параметры для запр
 SHOW_ALL_MY_QUERIES = "show_all_my_queries"
 SHOW_ALL_MY_QUERIES_DESCRIPTION = "Показать все мои запросы"
 CHANGE_QUERY = "change_query"
+
+# DEBUGGING
+STOP = "stop"
+STOP_DESCRIPTION = "Имитация деактивации бота"
+
+END_TRIAL_PERIOD = "end_trial_period"
+END_TRIAL_PERIOD_DESCRIPTION = "Имитация окончания пробного периода"

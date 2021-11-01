@@ -1,15 +1,18 @@
 import datetime
-from typing import Optional
+
+from loguru import logger
 
 from bot_zakupki.common import models
 
 
 def get_trial_period_state(
-        user: models.User,
-        date: Optional[datetime.datetime],
+        user: models.User, date: datetime.datetime
 ) -> models.TrialPeriodState:
-    if date is None:
-        date = datetime.datetime.now().replace(microsecond=0)
+    logger.debug(
+        f"now: {date}; "
+        f"trial_start_date: {user.trial_start_date}; "
+        f"trial_end_date: {user.trial_end_date}"
+    )
 
     if user.trial_start_date is None:
         return models.TrialPeriodState.TRIAL_PERIOD_HAS_NOT_STARTED
