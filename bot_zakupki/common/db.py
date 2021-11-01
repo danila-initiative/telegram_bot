@@ -79,9 +79,7 @@ def rows_to_user_model(rows: List[Tuple]) -> List[models.User]:
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             number_of_sending=row[7],
-            number_of_active_search_queries=row[8],
-            number_of_search_queries=row[9],
-            downtime_notification=bool(row[10]),
+            downtime_notification=bool(row[8]),
         )
         users.append(user)
 
@@ -145,6 +143,21 @@ def get_all_users(
     return None
 
 
+# FOR DEBUGGING
+def imitate_trial_period_end(
+        user_id: str,
+        cursor: sqlite3.Cursor = base_cursor,
+        connection: sqlite3.Connection = base_con,
+):
+    date = datetime.datetime.now().replace(microsecond=0)
+    logger.debug(f"New trial end date: {date}")
+    cursor.execute(
+        f"UPDATE user SET trial_end_date = ? WHERE user_id = {user_id}",
+        (date,),
+    )
+    connection.commit()
+
+
 # =============== search_query ===============
 
 
@@ -185,7 +198,9 @@ def insert_new_search_query(
     values = [tuple(column_values.values())]
     placeholders = ", ".join("?" * len(column_values.keys()))
     cursor.executemany(
-        f"INSERT INTO search_query " f"({columns}) " f"VALUES ({placeholders})",
+        f"INSERT INTO search_query "
+        f"({columns}) "
+        f"VALUES ({placeholders})",
         values,
     )
     connection.commit()
@@ -220,10 +235,11 @@ def get_all_search_queries_by_user_id(
 def get_all_active_search_queries_by_user_id(
         user_id: str,
         date: datetime.datetime,
-        cursor: Optional[sqlite3.Cursor] = None,
+        cursor: Optional[sqlite3.Cursor] = base_cursor,
 ) -> List[models.SearchQuery]:
     if cursor is None:
         connection, cursor = get_connection_cursor()
+
     logger.info(f"{date}: {str(date)}")
     sql = """
             SELECT *

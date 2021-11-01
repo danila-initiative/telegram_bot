@@ -28,9 +28,6 @@ async def set_commands(bot: Bot):
             command=commands.START, description=commands.START_DESCRIPTION
         ),
         types.BotCommand(
-            command=commands.STOP, description=commands.STOP_DESCRIPTION
-        ),
-        types.BotCommand(
             command=commands.ADD_NEW_QUERY,
             description=commands.ADD_NEW_QUERY_DESCRIPTION,
         ),
@@ -39,6 +36,20 @@ async def set_commands(bot: Bot):
             description=commands.SHOW_ALL_MY_QUERIES_DESCRIPTION,
         ),
     ]
+
+    if consts.DEBUG:
+        commands_to_set.append(
+            types.BotCommand(
+                command=commands.STOP, description=commands.STOP_DESCRIPTION
+            )
+        )
+        commands_to_set.append(
+            types.BotCommand(
+                command=commands.END_TRIAL_PERIOD,
+                description=commands.END_TRIAL_PERIOD_DESCRIPTION,
+            )
+        )
+
     await bot.set_my_commands(commands_to_set)
 
 
