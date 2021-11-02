@@ -9,6 +9,7 @@ def get_trial_period_state(
         user: models.User, date: datetime.datetime
 ) -> models.TrialPeriodState:
     logger.debug(
+        f"user id: {user.user_id}; "
         f"now: {date}; "
         f"trial_start_date: {user.trial_start_date}; "
         f"trial_end_date: {user.trial_end_date}"

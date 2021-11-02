@@ -80,11 +80,10 @@ async def new_query(message: types.Message):
     )
     number_of_active_search_queries = len(active_search_queries)
 
-    logger.debug(f"trial period state: {trial_period_state}")
-    logger.debug(f"number_of_search_queries: {number_of_search_queries}")
-    logger.debug(
-        f"number_of_active_search_queries: {number_of_active_search_queries}"
-    )
+    logger.debug(f"user id: {message.from_user.id}; "
+                 f"trial period state: {trial_period_state}; "
+                 f"number_of_search_queries: {number_of_search_queries}; "
+                 f"number_of_active_search_queries: {number_of_active_search_queries}")
 
     # пробный период
     # нельзя добавить больше 3-х запросов
@@ -217,7 +216,6 @@ async def process_max_price(message: types.Message, state: FSMContext):
 
     # пробный период закончился
     if trial_period_state == models.TrialPeriodState.TRIAL_PERIOD_IS_OVER:
-        logger.debug(f"trial period if over for user {message.from_user.id}")
         additional_message = "Оплатить новый запрос можно по ссылке: link"
 
     db.insert_new_search_query(column_values=query)
