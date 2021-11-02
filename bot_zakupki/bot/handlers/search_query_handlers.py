@@ -71,7 +71,7 @@ async def new_query(message: types.Message):
 
     trial_period_state = user_info.get_trial_period_state(user=user, date=now)
 
-    search_queries = db.get_all_search_queries_by_user_id(user_id)
+    search_queries = db.get_all_search_queries_by_user_id(user_id=user_id, date=now)
     number_of_search_queries = len(search_queries)
 
     now = datetime.datetime.now().replace(microsecond=0)
