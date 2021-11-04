@@ -206,6 +206,22 @@ def insert_new_search_query(
     connection.commit()
 
 
+def update_search_query(
+        query_id: int,
+        column_values: Dict,
+        connection: sqlite3.Connection = base_con,
+        cursor: sqlite3.Cursor = base_cursor,
+):
+    columns = " = ? ,".join(column_values.keys())
+    columns += " = ?"
+
+    values = tuple(column_values.values())
+    cursor.execute(
+        f"UPDATE search_query SET {columns} WHERE id = {query_id}", values
+    )
+    connection.commit()
+
+
 def get_all_search_queries(
         cursor: sqlite3.Cursor = base_cursor,
 ) -> List[models.SearchQuery]:
