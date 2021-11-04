@@ -9,6 +9,7 @@ from aiogram import types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from loguru import logger
 
+from bot_zakupki.bot.handlers import change_query_handlers
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import common_handlers
 from bot_zakupki.bot.handlers import search_query_handlers
@@ -34,6 +35,10 @@ async def set_commands(bot: Bot):
         types.BotCommand(
             command=commands.SHOW_ALL_MY_QUERIES,
             description=commands.SHOW_ALL_MY_QUERIES_DESCRIPTION,
+        ),
+        types.BotCommand(
+            command=commands.CHANGE_QUERY,
+            description=commands.CHANGE_QUERY_DESCRIPTION,
         ),
     ]
 
@@ -65,6 +70,7 @@ async def main():
 
     common_handlers.register_handlers_common(dp)
     search_query_handlers.register_handlers_search_query(dp)
+    change_query_handlers.register_change_search_query(dp)
 
     await set_commands(bot)
 

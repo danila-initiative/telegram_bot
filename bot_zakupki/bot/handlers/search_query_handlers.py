@@ -1,12 +1,14 @@
 # type: ignore
 import datetime
 
-from aiogram import Dispatcher, types
+from aiogram import Dispatcher
+from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State
 from aiogram.dispatcher.filters.state import StatesGroup
 from loguru import logger
 
+from bot_zakupki.bot.handlers import change_query_handlers as cqh
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
 from bot_zakupki.common import consts
@@ -33,23 +35,29 @@ def register_handlers_search_query(dp: Dispatcher):
     dp.register_message_handler(
         process_location,
         lambda message: message.text in models.CUSTOMER_PLACES.keys(),
-        state=SearchParameters.location,
+        state=[SearchParameters.location, cqh.ChangeSearchParameters.location],
     )
     dp.register_message_handler(
         process_location_invalid,
         lambda message: message.text not in models.CUSTOMER_PLACES.keys(),
-        state=SearchParameters.location,
+        state=[SearchParameters.location, cqh.ChangeSearchParameters.location],
     )
 
     dp.register_message_handler(
         process_min_price,
         lambda message: message.text.isdigit() and int(message.text) >= 0,
-        state=SearchParameters.min_price,
+        state=[
+            SearchParameters.min_price,
+            cqh.ChangeSearchParameters.min_price,
+        ],
     )
     dp.register_message_handler(
         process_min_price_invalid,
         lambda message: not message.text.isdigit() or int(message.text) < 0,
-        state=SearchParameters.min_price,
+        state=[
+            SearchParameters.min_price,
+            cqh.ChangeSearchParameters.min_price,
+        ],
     )
 
     dp.register_message_handler(
@@ -60,7 +68,10 @@ def register_handlers_search_query(dp: Dispatcher):
     dp.register_message_handler(
         process_max_price_invalid,
         lambda message: not message.text.isdigit(),
-        state=SearchParameters.max_price,
+        state=[
+            SearchParameters.max_price,
+            cqh.ChangeSearchParameters.max_price,
+        ],
     )
 
 
@@ -71,7 +82,9 @@ async def new_query(message: types.Message):
 
     trial_period_state = user_info.get_trial_period_state(user=user, date=now)
 
-    search_queries = db.get_all_search_queries_by_user_id(user_id=user_id, date=now)
+    search_queries = db.get_all_search_queries_by_user_id(
+        user_id=user_id, date=now
+    )
     number_of_search_queries = len(search_queries)
 
     now = datetime.datetime.now().replace(microsecond=0)
@@ -80,10 +93,12 @@ async def new_query(message: types.Message):
     )
     number_of_active_search_queries = len(active_search_queries)
 
-    logger.debug(f"user id: {message.from_user.id}; "
-                 f"trial period state: {trial_period_state}; "
-                 f"number_of_search_queries: {number_of_search_queries}; "
-                 f"number_of_active_search_queries: {number_of_active_search_queries}")
+    logger.debug(
+        f"user id: {message.from_user.id}; "
+        f"trial period state: {trial_period_state}; "
+        f"number_of_search_queries: {number_of_search_queries}; "
+        f"number_of_active_search_queries: {number_of_active_search_queries}"
+    )
 
     # пробный период
     # нельзя добавить больше 3-х запросов
@@ -139,7 +154,11 @@ async def process_search_string(message: types.Message, state: FSMContext):
 
 async def process_location(message: types.Message, state: FSMContext):
     await state.update_data(location=message.text)
-    await SearchParameters.min_price.set()
+
+    if await state.get_state() == "ChangeSearchParameters:location":
+        await cqh.ChangeSearchParameters.min_price.set()
+    else:
+        await SearchParameters.min_price.set()
 
     markup = types.ReplyKeyboardRemove()
 
@@ -155,7 +174,11 @@ async def process_location_invalid(message: types.Message):
 
 async def process_min_price(message: types.Message, state: FSMContext):
     await state.update_data(min_price=int(message.text))
-    await SearchParameters.max_price.set()
+
+    if await state.get_state() == "ChangeSearchParameters:min_price":
+        await cqh.ChangeSearchParameters.max_price.set()
+    else:
+        await SearchParameters.max_price.set()
 
     await message.answer(messages.SET_MAXIMUM_PRICE)
 
@@ -173,15 +196,15 @@ async def process_max_price(message: types.Message, state: FSMContext):
 
     data["max_price"] = int(message.text)
 
+    user_id = message.from_user.id
+
     query = {
-        "user_id": message.from_user.id,
+        "user_id": user_id,
         "search_string": data["search_string"],
         "location": data["location"],
         "min_price": data["min_price"],
         "max_price": data["max_price"],
     }
-
-    user_id = message.from_user.id
 
     user = db.get_user_by_user_id(user_id=user_id)
     now = datetime.datetime.now().replace(microsecond=0)

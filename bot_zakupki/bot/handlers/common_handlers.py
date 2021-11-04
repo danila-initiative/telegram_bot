@@ -1,7 +1,8 @@
 # type: ignore
 import datetime
 
-from aiogram import Dispatcher, types
+from aiogram import Dispatcher
+from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from loguru import logger
@@ -9,7 +10,6 @@ from loguru import logger
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
 from bot_zakupki.common import consts
-from bot_zakupki.common import dates
 from bot_zakupki.common import db
 
 
@@ -60,23 +60,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
 async def cmd_show_all_my_queries(message: types.Message, state: FSMContext):
     await state.finish()
     now = datetime.datetime.now().replace(microsecond=0)
-    queries = db.get_all_active_search_queries_by_user_id(
-        message.from_user.id, now
-    )
-    answer = ""
-    if not queries:
-        answer = "У тебя сейчас нет активных запросов"
-
-    for i, query in enumerate(queries):
-        tmp = (
-            f"<b>{i + 1}</b>. 🔍 Ключевая строка: {query.search_string}\n"
-            f"    🌏 Регион: {query.location}\n"
-            f"    💰 Цена: от {query.min_price} до {query.max_price} рублей\n"
-            f"    🗓️ Окончание подписки: "
-            f"{dates.format_date(query.subscription_last_day)}\n"
-            f"\n"
-        )
-        answer += tmp
+    queries = db.get_all_search_queries_by_user_id(message.from_user.id, now)
+    answer = messages.all_queries_messages_formation(queries=queries)
 
     await message.answer(answer)
 
@@ -107,7 +92,7 @@ async def cmd_end_trial_period(message: types.Message, state: FSMContext):
     await state.finish()
     logger.info(
         f'Command "/{commands.END_TRIAL_PERIOD}" '
-        f'was used by user {message.from_user.id}'
+        f"was used by user {message.from_user.id}"
     )
     user_id = message.from_user.id
 

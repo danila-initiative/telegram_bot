@@ -15,6 +15,10 @@ def format_date(current_date: datetime.datetime) -> str:
     return current_date.date().strftime("%Y-%m-%d")
 
 
+def get_current_time_for_db():
+    return datetime.datetime.now().replace(microsecond=0)
+
+
 def is_working_day(date: datetime.datetime) -> bool:
     work_days = [1, 2, 3, 4, 5]
     day_number = date.date().isoweekday()
