@@ -41,7 +41,9 @@ def register_change_search_query(dp: Dispatcher):
 async def cmd_choose_query_to_change(
         message: types.Message, state: FSMContext
 ):
+    print(f"State: {await state.get_state()}")
     await state.finish()
+    print(f"State: {await state.get_state()}")
     user_id = message.from_user.id
 
     # Получение всех запросов
@@ -124,7 +126,7 @@ async def process_change_max_price(message: types.Message, state: FSMContext):
         data["location"],
         data["min_price"],
         data["max_price"],
-        query_number
+        query_number,
     )
 
     await message.answer(changed_query_data_message)

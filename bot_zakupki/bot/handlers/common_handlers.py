@@ -15,8 +15,9 @@ from bot_zakupki.common import db
 
 def register_handlers_common(dp: Dispatcher):
     dp.register_message_handler(
-        cmd_start, commands=[commands.START, "/help"], state="*"
+        cmd_start, commands=[commands.START], state="*"
     )
+    dp.register_message_handler(cmd_help, commands=[commands.HELP], state="*")
     dp.register_message_handler(
         cmd_show_all_my_queries, commands=[commands.SHOW_ALL_MY_QUERIES]
     )
@@ -54,6 +55,17 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     await message.answer(
         messages.CMD_START_MSG, reply_markup=types.ReplyKeyboardRemove()
+    )
+
+
+async def cmd_help(message: types.Message, state: FSMContext):
+    await state.finish()
+    logger.info(
+        f'Command "/{commands.HELP}" was used by user {message.from_user.id}'
+    )
+
+    await message.answer(
+        messages.CMD_HELP_MSG, reply_markup=types.ReplyKeyboardRemove()
     )
 
 

@@ -6,11 +6,11 @@ from aiogram.dispatcher.middlewares import BaseMiddleware
 
 
 class AccessMiddleware(BaseMiddleware):
-    def __init__(self, access_ids: int):
+    def __init__(self, access_ids: list[int]):
         self.access_ids = access_ids
         super().__init__()
 
     async def on_process_message(self, message: types.Message, _):
-        if int(message.from_user.id) != self.access_ids:
+        if int(message.from_user.id) not in self.access_ids:
             await message.answer("Access Denied")
             raise CancelHandler()

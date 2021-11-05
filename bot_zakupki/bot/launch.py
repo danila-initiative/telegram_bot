@@ -26,9 +26,6 @@ else:
 async def set_commands(bot: Bot):
     commands_to_set = [
         types.BotCommand(
-            command=commands.START, description=commands.START_DESCRIPTION
-        ),
-        types.BotCommand(
             command=commands.ADD_NEW_QUERY,
             description=commands.ADD_NEW_QUERY_DESCRIPTION,
         ),
@@ -39,6 +36,9 @@ async def set_commands(bot: Bot):
         types.BotCommand(
             command=commands.CHANGE_QUERY,
             description=commands.CHANGE_QUERY_DESCRIPTION,
+        ),
+        types.BotCommand(
+            command=commands.HELP, description=commands.HELP_DESCRIPTION
         ),
     ]
 
@@ -59,14 +59,16 @@ async def set_commands(bot: Bot):
 
 
 async def main():
-    access_id = os.getenv("TELEGRAM_ACCESS_ID")
+    access_ids = os.getenv("TELEGRAM_ACCESS_ID")[1:-1]
+    access_ids = access_ids.split(",")
+    print(f"access_ids: {access_ids}")
     api_token = os.getenv("ADMIN_TELEGRAM_API_TOKEN")
 
     bot = Bot(token=api_token, parse_mode="HTML")
 
     storage = MemoryStorage()
     dp = Dispatcher(bot, storage=storage)
-    dp.middleware.setup(AccessMiddleware(int(access_id)))
+    dp.middleware.setup(AccessMiddleware([int(i) for i in access_ids]))
 
     common_handlers.register_handlers_common(dp)
     search_query_handlers.register_handlers_search_query(dp)

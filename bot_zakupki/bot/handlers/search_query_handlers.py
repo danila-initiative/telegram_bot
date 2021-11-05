@@ -29,7 +29,9 @@ def register_handlers_search_query(dp: Dispatcher):
         new_query, commands=commands.ADD_NEW_QUERY, state="*"
     )
     dp.register_message_handler(
-        callback=process_search_string, state=SearchParameters.search_string
+        process_search_string,
+        lambda message: not message.text.startswith("/"),
+        state=SearchParameters.search_string,
     )
 
     dp.register_message_handler(

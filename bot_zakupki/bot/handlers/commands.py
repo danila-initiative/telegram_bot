@@ -1,6 +1,9 @@
 # Common commands
 START = "start"
-START_DESCRIPTION = "типа старт"
+START_DESCRIPTION = "Старт"
+
+HELP = "help"
+HELP_DESCRIPTION = "Информация о боте"
 
 INFO = "info"
 CANCEL = "cancel"
@@ -17,7 +20,7 @@ CHANGE_QUERY_DESCRIPTION = "Изменить мои запросы"
 
 # DEBUGGING
 STOP = "stop"
-STOP_DESCRIPTION = "Имитация деактивации бота"
+STOP_DESCRIPTION = "[DEBUG] Имитация деактивации бота"
 
 END_TRIAL_PERIOD = "end_trial_period"
-END_TRIAL_PERIOD_DESCRIPTION = "Имитация окончания пробного периода"
+END_TRIAL_PERIOD_DESCRIPTION = "[DEBUG] Имитация окончания пробного периода"
