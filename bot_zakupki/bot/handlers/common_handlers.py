@@ -71,8 +71,7 @@ async def cmd_help(message: types.Message, state: FSMContext):
 
 async def cmd_show_all_my_queries(message: types.Message, state: FSMContext):
     await state.finish()
-    now = datetime.datetime.now().replace(microsecond=0)
-    queries = db.get_all_search_queries_by_user_id(message.from_user.id, now)
+    queries = db.get_all_search_queries_by_user_id(message.from_user.id)
     answer = messages.all_queries_messages_formation(queries=queries)
 
     await message.answer(answer)

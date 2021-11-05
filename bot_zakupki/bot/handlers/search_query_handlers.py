@@ -84,12 +84,9 @@ async def new_query(message: types.Message):
 
     trial_period_state = user_info.get_trial_period_state(user=user, date=now)
 
-    search_queries = db.get_all_search_queries_by_user_id(
-        user_id=user_id, date=now
-    )
+    search_queries = db.get_all_search_queries_by_user_id(user_id=user_id)
     number_of_search_queries = len(search_queries)
 
-    now = datetime.datetime.now().replace(microsecond=0)
     active_search_queries = db.get_all_active_search_queries_by_user_id(
         user_id=user_id, date=now
     )
@@ -106,7 +103,7 @@ async def new_query(message: types.Message):
     # нельзя добавить больше 3-х запросов
     if (
             trial_period_state == models.TrialPeriodState.TRIAL_PERIOD
-            and number_of_active_search_queries == 3
+            and number_of_active_search_queries >= 3
     ):
         await message.answer(
             messages.CANNOT_ADD_MORE_QUERY_IN_TRIAL_PERIOD,

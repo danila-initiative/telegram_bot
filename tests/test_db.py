@@ -73,7 +73,7 @@ def setup_db_with_data(setup_db):
         "subscription_last_day": '2021-07-25 10:10:00'
     }
     query_3 = {
-        "user_id": '123456',
+        "user_id": 123456,
         "search_string": "search_string_2",
         "location": "Питер",
         "deleted": 1,

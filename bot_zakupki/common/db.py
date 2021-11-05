@@ -234,21 +234,15 @@ def get_all_search_queries(
 
 def get_all_search_queries_by_user_id(
         user_id: str,
-        date: datetime.datetime,
         cursor: sqlite3.Cursor = base_cursor,
 ) -> List[models.SearchQuery]:
     sql = """
         SELECT *
         FROM search_query
         WHERE user_id = ? 
-        AND 
-        (
-        (deleted = 0) OR 
-        (deleted = 1 and subscription_last_day > ?)
-        )
     """
 
-    cursor.execute(sql, (user_id, date))
+    cursor.execute(sql, (user_id,))
     rows = cursor.fetchall()
 
     return rows_to_search_query_model(rows)

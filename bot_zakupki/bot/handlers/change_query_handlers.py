@@ -8,7 +8,6 @@ from aiogram.dispatcher.filters.state import StatesGroup
 
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
-from bot_zakupki.common import dates
 from bot_zakupki.common import db
 from bot_zakupki.common import models
 
@@ -48,7 +47,7 @@ async def cmd_choose_query_to_change(
 
     # Получение всех запросов
     queries = db.get_all_search_queries_by_user_id(
-        user_id=user_id, date=dates.get_current_time_for_db()
+        user_id=user_id,
     )
 
     answer = messages.all_queries_messages_formation(queries=queries)
@@ -74,7 +73,7 @@ async def callback_change_query(call: types.CallbackQuery):
 
     user_id = call.from_user.id
     queries = db.get_all_search_queries_by_user_id(
-        user_id=user_id, date=dates.get_current_time_for_db()
+        user_id=user_id,
     )
 
     number = call.data.split("_")[-1]

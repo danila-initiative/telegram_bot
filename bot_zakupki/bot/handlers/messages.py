@@ -156,7 +156,7 @@ def all_queries_messages_formation(queries: List[models.SearchQuery]) -> str:
                 f"{dates.format_date(query.subscription_last_day)}\n"
             )
         else:
-            subscription_msg = f"    🗓️ Подписка неактивна" f"\n"
+            subscription_msg = f"    🗓️ Подписка неактивна\n"
 
         tmp += subscription_msg
         tmp += "\n"
