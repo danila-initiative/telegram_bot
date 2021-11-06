@@ -38,7 +38,7 @@ def register_change_search_query(dp: Dispatcher):
 
 
 async def cmd_choose_query_to_change(
-        message: types.Message, state: FSMContext
+    message: types.Message, state: FSMContext
 ):
     print(f"State: {await state.get_state()}")
     await state.finish()
@@ -88,7 +88,7 @@ async def callback_change_query(call: types.CallbackQuery):
 
 
 async def process_change_search_string(
-        message: types.Message, state: FSMContext
+    message: types.Message, state: FSMContext
 ):
     await state.update_data(search_string=message.text.lower())
     await ChangeSearchParameters.location.set()

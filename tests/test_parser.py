@@ -19,8 +19,7 @@ from bot_zakupki.common import parser
                               price=9175661,
                               subject_of_purchase='Выполнение работ по замене лифтового оборудования в рамках капитального ремонта в ГБУ ГЦМ',
                               link='https://zakupki.gov.ru/epz/order/notice/ea44/view/common-info.html?regNumber=0373200041521001009',
-                              customer='ГОСУДАРСТВЕННОЕ КАЗЕННОЕ УЧРЕЖДЕНИЕ ГОРОДА МОСКВЫ "ДИРЕКЦИЯ ПО ОБЕСПЕЧЕНИЮ ДЕЯТЕЛЬНОСТИ ОРГАНИЗАЦИЙ ТРУДА И СОЦИАЛЬНОЙ ЗАЩИТЫ НАСЕЛЕНИЯ ГОРОДА МОСКВЫ"',
-                              location='Москва'),
+                              customer='ГОСУДАРСТВЕННОЕ КАЗЕННОЕ УЧРЕЖДЕНИЕ ГОРОДА МОСКВЫ "ДИРЕКЦИЯ ПО ОБЕСПЕЧЕНИЮ ДЕЯТЕЛЬНОСТИ ОРГАНИЗАЦИЙ ТРУДА И СОЦИАЛЬНОЙ ЗАЩИТЫ НАСЕЛЕНИЯ ГОРОДА МОСКВЫ"',),
                 id='0',
             ),
     )
@@ -29,7 +28,7 @@ def test_parser_page(expected_result):
     page = open("tests/static/test_parser/results.html", 'r', encoding='utf-8')
     response = Response()
     response._content = str(page.read())
-    results = parser.parse_result_page(response, "лифт", "Москва")
+    results = parser.parse_result_page(response, "лифт")
     print(results[0])
     assert results[0] == expected_result
 

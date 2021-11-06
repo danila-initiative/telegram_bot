@@ -39,8 +39,6 @@ def request_formation(custom_params: models.RequestParameters) -> str:
     parameters = basic_params + filtered_custom_param
     params_combined = "&".join(map(lambda x: x[0] + "=" + x[1], parameters))
 
-    logger.info(f"created url: {consts.BASE_URL + params_combined}")
-
     return consts.BASE_URL + params_combined
 
 
@@ -52,7 +50,7 @@ def get_page_by_url(url: str) -> Response:
 
 @logger.catch
 def parse_result_page(
-        page: Response, search_string, location: str
+    page: Response, search_string
 ) -> Optional[list[models.Result]]:
     """Return all results with key words in purchase subject"""
     results = list()
@@ -110,8 +108,6 @@ def parse_result_page(
             if letter.isdigit():
                 new_price += letter
 
-        print(f"price: {int(new_price)}")
-
         customer = i.find(
             "div", class_="registry-entry__body-href"
         ).text.strip()
@@ -137,11 +133,11 @@ def parse_result_page(
                 subject_of_purchase=subject_of_purchase,
                 link=link,
                 customer=customer,
-                location=location,
             )
         )
 
     return results
+
 
 # def SaveDfToExel(df: DataFrame, file_name: str):
 #     writer = pd.ExcelWriter(file_name, engine='xlsxwriter')

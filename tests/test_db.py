@@ -143,3 +143,30 @@ def test_get_all_active_search_queries_by_user_id(setup_db_with_data):
     assert len(res) == 2
     for row in res:
         assert row.subscription_last_day > dates.sqlite_date_to_datetime(today)
+
+
+def test_get_all_results(setup_db):
+    cursor = setup_db.cursor()
+    rows = db.get_all_results(cursor)
+
+    date = dates.res_date_to_datetime("03.07.2021")
+
+    print(f"rows: {rows}")
+
+    result = models.Result(
+        search_string="string 1",
+        number_of_purchase="12345678994",
+        publish_date=date,
+        finish_date=date,
+        price=1274812,
+        subject_of_purchase="subject",
+        link="http://dsdgsdgsdgsd.com",
+        customer="customer 1",
+    )
+
+    db.insert_results({124124: [result], 235423: [result]}, setup_db, cursor)
+    rows = db.get_all_results(cursor)
+    print(f"rows: {rows}")
+
+    assert False
+

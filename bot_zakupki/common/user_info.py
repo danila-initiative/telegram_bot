@@ -6,7 +6,7 @@ from bot_zakupki.common import models
 
 
 def get_trial_period_state(
-        user: models.User, date: datetime.datetime
+    user: models.User, date: datetime.datetime
 ) -> models.TrialPeriodState:
     logger.debug(
         f"user id: {user.user_id}; "

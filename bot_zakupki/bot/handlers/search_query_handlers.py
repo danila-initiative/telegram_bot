@@ -102,8 +102,9 @@ async def new_query(message: types.Message):
     # пробный период
     # нельзя добавить больше 3-х запросов
     if (
-            trial_period_state == models.TrialPeriodState.TRIAL_PERIOD
-            and number_of_active_search_queries >= 3
+        trial_period_state == models.TrialPeriodState.TRIAL_PERIOD
+        and number_of_active_search_queries
+        >= consts.MAX_QUERIES_IN_TRIAL_PERIOD
     ):
         await message.answer(
             messages.CANNOT_ADD_MORE_QUERY_IN_TRIAL_PERIOD,
@@ -112,10 +113,11 @@ async def new_query(message: types.Message):
         return
 
     # пробный период закончился
-    # нельзя добавить больше 5 неактивных запросов
+    # нельзя добавить больше 3 неактивных запросов
     if (
-            trial_period_state == models.TrialPeriodState.TRIAL_PERIOD_IS_OVER
-            and number_of_search_queries - number_of_active_search_queries >= 5
+        trial_period_state == models.TrialPeriodState.TRIAL_PERIOD_IS_OVER
+        and number_of_search_queries - number_of_active_search_queries
+        >= consts.MAX_NONACTIVE_QUERIES
     ):
         logger.debug(
             f"number of active queries: {number_of_active_search_queries}; "
@@ -212,10 +214,10 @@ async def process_max_price(message: types.Message, state: FSMContext):
     # пробный период не начался
     # добавляем дату начала и окончания пробного периода
     if (
-            trial_period_state
-            == models.TrialPeriodState.TRIAL_PERIOD_HAS_NOT_STARTED
+        trial_period_state
+        == models.TrialPeriodState.TRIAL_PERIOD_HAS_NOT_STARTED
     ):
-        last_sub_day = now + datetime.timedelta(days=consts.TEST_PERIOD)
+        last_sub_day = now + datetime.timedelta(days=consts.TRIAL_PERIOD)
 
         user_data_update = {
             "trial_start_date": now,
