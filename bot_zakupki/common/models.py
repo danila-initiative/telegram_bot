@@ -53,14 +53,28 @@ class TrialPeriodState(str, Enum):
 @dataclasses.dataclass(frozen=True)
 class Result:
     search_string: str
-    number_of_purchase: str
     publish_date: datetime.datetime
     finish_date: datetime.datetime
-    price: int
+    number_of_purchase: str
     subject_of_purchase: str
+    price: int
     link: str
     customer: str
-    location: str
+    location: str = None
+    query_id: int = None
+
+    def to_tuple(self):
+        return (
+            self.search_string,
+            self.number_of_purchase,
+            self.publish_date,
+            self.finish_date,
+            self.price,
+            self.subject_of_purchase,
+            self.link,
+            self.customer,
+            self.location,
+        )
 
 
 @dataclasses.dataclass()
@@ -69,8 +83,8 @@ class RequestParameters:
     place_name: str  # Москва
     publish_date_from: typing.Optional[str]  # 06.08.2021
     publish_date_to: typing.Optional[str]  # 07.08.2021
-    close_date_from: typing.Optional[str]  # 08.08.2021
-    close_date_to: typing.Optional[str]  # 09.08.2021
+    close_date_from: typing.Optional[str] = None  # 08.08.2021
+    close_date_to: typing.Optional[str] = None  # 09.08.2021
     min_price: typing.Optional[int] = None  # 100000
     max_price: typing.Optional[int] = None  # 500000
 

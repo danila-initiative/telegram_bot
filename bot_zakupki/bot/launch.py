@@ -15,11 +15,18 @@ from bot_zakupki.bot.handlers import common_handlers
 from bot_zakupki.bot.handlers import search_query_handlers
 from bot_zakupki.bot.middlewares import AccessMiddleware
 from bot_zakupki.common import consts
+from bot_zakupki.common import dates
 
 logger.remove()
 if consts.DEBUG:
+    logger.add(
+        f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="DEBUG"
+    )
     logger.add(sys.stdout, level="DEBUG")
 else:
+    logger.add(
+        f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="INFO"
+    )
     logger.add(sys.stdout, level="INFO")
 
 
@@ -58,6 +65,7 @@ async def set_commands(bot: Bot):
     await bot.set_my_commands(commands_to_set)
 
 
+@logger.catch
 async def main():
     access_ids = os.getenv("TELEGRAM_ACCESS_ID")[1:-1]
     access_ids = access_ids.split(",")

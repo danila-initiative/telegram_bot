@@ -100,11 +100,11 @@ UPDATED_QUERY = "Обновленные параметры для запроса
 
 # формирование сообщения после КА с заданием данных
 def query_message_formation(
-        search_string: str,
-        location: str,
-        min_price: int,
-        max_price: int,
-        with_n: bool = True,
+    search_string: str,
+    location: str,
+    min_price: int,
+    max_price: int,
+    with_n: bool = True,
 ) -> str:
     delimiter = ""
     if with_n:
@@ -121,11 +121,11 @@ def query_message_formation(
 
 
 def changed_query_message_formation(
-        search_string: str,
-        location: str,
-        min_price: int,
-        max_price: int,
-        query_number: str,
+    search_string: str,
+    location: str,
+    min_price: int,
+    max_price: int,
+    query_number: str,
 ) -> str:
     answer = f"{UPDATED_QUERY} <b>{query_number}.\n</b>" f"\n"
     query = query_message_formation(

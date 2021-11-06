@@ -17,12 +17,11 @@ from bot_zakupki.common import models
 
 
 def get_connection_cursor(
-        path_to_db: str = consts.PATH_TO_DB,
+    path_to_db: str = consts.PATH_TO_DB,
 ):
     connection = sqlite3.connect(path_to_db)
-    logger.info("Connection to SQLite DB successful")
     cursor = connection.cursor()
-    logger.info("Cursor to SQLite DB successful")
+    logger.info("Connection and Cursor to SQLite DB successful")
 
     return connection, cursor
 
@@ -31,9 +30,9 @@ base_con, base_cursor = get_connection_cursor()
 
 
 def init_db(
-        connection: sqlite3.Connection = base_con,
-        cursor: sqlite3.Cursor = base_cursor,
-        path_to_migrations: str = consts.PATH_TO_MIGRATIONS,
+    connection: sqlite3.Connection = base_con,
+    cursor: sqlite3.Cursor = base_cursor,
+    path_to_migrations: str = consts.PATH_TO_MIGRATIONS,
 ):
     """Инициализирует БД"""
     migrations = os.listdir(path_to_migrations)
@@ -87,9 +86,9 @@ def rows_to_user_model(rows: List[Tuple]) -> List[models.User]:
 
 
 def insert_new_user(
-        user_id: str,
-        connection: sqlite3.Connection = base_con,
-        cursor: sqlite3.Cursor = base_cursor,
+    user_id: str,
+    connection: sqlite3.Connection = base_con,
+    cursor: sqlite3.Cursor = base_cursor,
 ):
     cursor.execute(
         f"INSERT INTO user" f"(user_id) " f"VALUES ({user_id})",
@@ -98,10 +97,10 @@ def insert_new_user(
 
 
 def update_user_by_user_id(
-        user_id: str,
-        column_values: Dict,
-        connection: sqlite3.Connection = base_con,
-        cursor: sqlite3.Cursor = base_cursor,
+    user_id: str,
+    column_values: Dict,
+    connection: sqlite3.Connection = base_con,
+    cursor: sqlite3.Cursor = base_cursor,
 ):
     columns = " = ? ,".join(column_values.keys())
     columns += " = ?"
@@ -114,8 +113,8 @@ def update_user_by_user_id(
 
 
 def get_user_by_user_id(
-        user_id: str,
-        cursor: sqlite3.Cursor = base_cursor,
+    user_id: str,
+    cursor: sqlite3.Cursor = base_cursor,
 ) -> Optional[models.User]:
     sql = """
             SELECT *
@@ -132,7 +131,7 @@ def get_user_by_user_id(
 
 
 def get_all_users(
-        cursor: sqlite3.Cursor = base_cursor,
+    cursor: sqlite3.Cursor = base_cursor,
 ) -> Optional[List[models.User]]:
     sql = "SELECT * FROM user"
     cursor.execute(sql)
@@ -145,9 +144,9 @@ def get_all_users(
 
 # FOR DEBUGGING
 def imitate_trial_period_end(
-        user_id: str,
-        cursor: sqlite3.Cursor = base_cursor,
-        connection: sqlite3.Connection = base_con,
+    user_id: str,
+    cursor: sqlite3.Cursor = base_cursor,
+    connection: sqlite3.Connection = base_con,
 ):
     date = datetime.datetime.now().replace(microsecond=0)
     logger.debug(f"New trial end date: {date}")
@@ -190,9 +189,9 @@ def rows_to_search_query_model(rows: List[Tuple]) -> List[models.SearchQuery]:
 
 
 def insert_new_search_query(
-        column_values: Dict,
-        connection: sqlite3.Connection = base_con,
-        cursor: sqlite3.Cursor = base_cursor,
+    column_values: Dict,
+    connection: sqlite3.Connection = base_con,
+    cursor: sqlite3.Cursor = base_cursor,
 ):
     columns = ", ".join(column_values.keys())
     values = [tuple(column_values.values())]
@@ -207,10 +206,10 @@ def insert_new_search_query(
 
 
 def update_search_query(
-        query_id: int,
-        column_values: Dict,
-        connection: sqlite3.Connection = base_con,
-        cursor: sqlite3.Cursor = base_cursor,
+    query_id: int,
+    column_values: Dict,
+    connection: sqlite3.Connection = base_con,
+    cursor: sqlite3.Cursor = base_cursor,
 ):
     columns = " = ? ,".join(column_values.keys())
     columns += " = ?"
@@ -223,7 +222,7 @@ def update_search_query(
 
 
 def get_all_search_queries(
-        cursor: sqlite3.Cursor = base_cursor,
+    cursor: sqlite3.Cursor = base_cursor,
 ) -> List[models.SearchQuery]:
     sql = "SELECT * FROM search_query"
     cursor.execute(sql)
@@ -233,8 +232,8 @@ def get_all_search_queries(
 
 
 def get_all_search_queries_by_user_id(
-        user_id: str,
-        cursor: sqlite3.Cursor = base_cursor,
+    user_id: str,
+    cursor: sqlite3.Cursor = base_cursor,
 ) -> List[models.SearchQuery]:
     sql = """
         SELECT *
@@ -248,14 +247,25 @@ def get_all_search_queries_by_user_id(
     return rows_to_search_query_model(rows)
 
 
-def get_all_active_search_queries_by_user_id(
-        user_id: str,
-        date: datetime.datetime,
-        cursor: Optional[sqlite3.Cursor] = base_cursor,
+def get_all_active_search_queries(
+    date: datetime.datetime,
+    cursor: Optional[sqlite3.Cursor] = base_cursor,
 ) -> List[models.SearchQuery]:
-    if cursor is None:
-        connection, cursor = get_connection_cursor()
+    sql = """
+            SELECT *
+            FROM search_query
+            WHERE subscription_last_day > ?"""
+    cursor.execute(sql, (str(date),))
+    rows = cursor.fetchall()
 
+    return rows_to_search_query_model(rows)
+
+
+def get_all_active_search_queries_by_user_id(
+    user_id: str,
+    date: datetime.datetime,
+    cursor: Optional[sqlite3.Cursor] = base_cursor,
+) -> List[models.SearchQuery]:
     logger.info(f"{date}: {str(date)}")
     sql = """
             SELECT *
@@ -267,6 +277,78 @@ def get_all_active_search_queries_by_user_id(
     rows = cursor.fetchall()
 
     return rows_to_search_query_model(rows)
+
+
+# =============== results ===============
+
+
+def rows_to_result_model(rows: List[tuple]) -> List[models.Result]:
+    results = []
+
+    for row in rows:
+        print(f"row: {row}")
+        result = models.Result(
+            search_string=row[1],
+            publish_date=dates.sqlite_date_to_datetime(row[2]),
+            finish_date=dates.sqlite_date_to_datetime(row[3]),
+            number_of_purchase=row[4],
+            subject_of_purchase=row[5],
+            price=row[6],
+            link=row[7],
+            customer=row[8],
+            location=row[9],
+            query_id=row[10],
+        )
+        results.append(result)
+
+    return results
+
+
+# Атрибуты класса Result и query_id
+def get_result_columns_name() -> tuple:
+    return (
+        "search_string",
+        "number_of_purchase",
+        "publish_date",
+        "finish_date",
+        "price",
+        "subject_of_purchase",
+        "link",
+        "customer",
+        "location",
+        "query_id",
+    )
+
+
+def insert_results(
+    column_values: Dict[int, List[models.Result]],
+    connection: sqlite3.Connection = base_con,
+    cursor: sqlite3.Cursor = base_cursor,
+):
+    columns = get_result_columns_name()
+    placeholders = ", ".join("?" * len(columns))
+
+    values = []
+    for query_id, result in column_values.items():
+        if not result:
+            continue
+        tmp = [(*res.to_tuple(), query_id) for res in result]
+        values.append(*tmp)
+
+    cursor.executemany(
+        f"INSERT INTO result" f"{columns} " f"VALUES ({placeholders})",
+        values,
+    )
+
+    connection.commit()
+
+
+def get_all_results(cursor: Optional[sqlite3.Cursor] = base_cursor):
+    sql = """SELECT * FROM result"""
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+
+    return rows_to_result_model(rows)
 
 
 if __name__ == "__main__":

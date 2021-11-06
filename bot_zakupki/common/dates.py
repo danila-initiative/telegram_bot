@@ -15,8 +15,18 @@ def format_date(current_date: datetime.datetime) -> str:
     return current_date.date().strftime("%Y-%m-%d")
 
 
+def format_date_for_request(date: datetime.datetime) -> str:
+    # example: 04.11.2021
+
+    return date.date().strftime("%d.%m.%Y")
+
+
 def get_current_time_for_db():
     return datetime.datetime.now().replace(microsecond=0)
+
+
+def get_today_date():
+    return format_date(datetime.datetime.now())
 
 
 def is_working_day(date: datetime.datetime) -> bool:
