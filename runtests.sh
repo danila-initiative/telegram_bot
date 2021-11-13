@@ -10,8 +10,7 @@ if [ "$?" = "0" ]; then
     echo -e "\nrun \"coverage html\" for full report"
     echo -e "\n"
 
-    black --line-length 81 bot_zakupki
-    flake8 --max-line-length 81 bot_zakupki
+    flake8 --max-line-length 90 bot_zakupki
     mypy bot_zakupki
 fi
 

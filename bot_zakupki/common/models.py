@@ -50,6 +50,12 @@ class TrialPeriodState(str, Enum):
     TRIAL_PERIOD_IS_OVER = "trial_period_is_over"
 
 
+class MaxPriceValidation(str, Enum):
+    NOT_A_NUMBER = "not_a_number"
+    LESS_THAT_MIN_PRICE = "less_than_min_price"
+    VALID = "valid"
+
+
 @dataclasses.dataclass(frozen=True)
 class Result:
     search_string: str
@@ -60,8 +66,8 @@ class Result:
     price: int
     link: str
     customer: str
-    location: str = None
-    query_id: int = None
+    location: typing.Union[str, None] = None
+    query_id: typing.Union[int, None] = None
 
     def to_tuple(self):
         return (

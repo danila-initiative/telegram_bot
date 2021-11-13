@@ -10,6 +10,7 @@ from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
 from bot_zakupki.common import db
 from bot_zakupki.common import models
+from bot_zakupki.common import utils
 
 user_data = {}
 
@@ -102,11 +103,19 @@ async def process_change_search_string(
 
 async def process_change_max_price(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    if int(message.text) <= data["min_price"]:
-        await message.reply(messages.SET_MAX_PRICE_LESS_THAN_MIN)
+    valid, max_price = utils.check_and_process_max_price(
+        message.text, data["min_price"]
+    )
+
+    if valid == models.MaxPriceValidation.NOT_A_NUMBER:
+        await message.answer(messages.MAX_PRICE_NOT_A_NUMBER)
         return
 
-    data["max_price"] = int(message.text)
+    if valid == models.MaxPriceValidation.LESS_THAT_MIN_PRICE:
+        await message.reply(messages.MAX_PRICE_LESS_THAN_MIN)
+        return
+
+    data["max_price"] = max_price
 
     user_id = message.from_user.id
     query_id = user_data[user_id][1]

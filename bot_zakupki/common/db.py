@@ -238,7 +238,7 @@ def get_all_search_queries_by_user_id(
     sql = """
         SELECT *
         FROM search_query
-        WHERE user_id = ? 
+        WHERE user_id = ?
     """
 
     cursor.execute(sql, (user_id,))
