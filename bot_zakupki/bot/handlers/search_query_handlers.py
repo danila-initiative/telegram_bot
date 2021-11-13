@@ -15,6 +15,7 @@ from bot_zakupki.common import consts
 from bot_zakupki.common import db
 from bot_zakupki.common import models
 from bot_zakupki.common import user_info
+from bot_zakupki.common import utils
 
 
 class SearchParameters(StatesGroup):
@@ -47,15 +48,6 @@ def register_handlers_search_query(dp: Dispatcher):
 
     dp.register_message_handler(
         process_min_price,
-        lambda message: message.text.isdigit() and int(message.text) >= 0,
-        state=[
-            SearchParameters.min_price,
-            cqh.ChangeSearchParameters.min_price,
-        ],
-    )
-    dp.register_message_handler(
-        process_min_price_invalid,
-        lambda message: not message.text.isdigit() or int(message.text) < 0,
         state=[
             SearchParameters.min_price,
             cqh.ChangeSearchParameters.min_price,
@@ -64,16 +56,8 @@ def register_handlers_search_query(dp: Dispatcher):
 
     dp.register_message_handler(
         process_max_price,
-        lambda message: message.text.isdigit(),
+        lambda message: utils.delete_all_spaces(message.text).isdigit(),
         state=SearchParameters.max_price,
-    )
-    dp.register_message_handler(
-        process_max_price_invalid,
-        lambda message: not message.text.isdigit(),
-        state=[
-            SearchParameters.max_price,
-            cqh.ChangeSearchParameters.max_price,
-        ],
     )
 
 
@@ -174,7 +158,15 @@ async def process_location_invalid(message: types.Message):
 
 
 async def process_min_price(message: types.Message, state: FSMContext):
-    await state.update_data(min_price=int(message.text))
+    # проверка на валидность минимальной цены
+    min_price = utils.delete_all_spaces(message.text)
+    logger.debug(f"min_price: {min_price}")
+    if not min_price.isdigit() or int(min_price) < 0:
+        await message.reply(messages.SET_MINIMUM_PRICE_INVALID)
+        return
+
+    min_price = int(min_price)
+    await state.update_data(min_price=min_price)
 
     if await state.get_state() == "ChangeSearchParameters:min_price":
         await cqh.ChangeSearchParameters.max_price.set()
@@ -184,18 +176,22 @@ async def process_min_price(message: types.Message, state: FSMContext):
     await message.answer(messages.SET_MAXIMUM_PRICE)
 
 
-async def process_min_price_invalid(message: types.Message):
-    await message.reply(messages.SET_MINIMUM_PRICE_INVALID)
-
-
 async def process_max_price(message: types.Message, state: FSMContext):
     additional_message = ""
     data = await state.get_data()
-    if int(message.text) <= data["min_price"]:
-        await message.reply(messages.SET_MAX_PRICE_LESS_THAN_MIN)
+    valid, max_price = utils.check_and_process_max_price(
+        message.text, data["min_price"]
+    )
+
+    if valid == models.MaxPriceValidation.NOT_A_NUMBER:
+        await message.answer(messages.MAX_PRICE_NOT_A_NUMBER)
         return
 
-    data["max_price"] = int(message.text)
+    if valid == models.MaxPriceValidation.LESS_THAT_MIN_PRICE:
+        await message.reply(messages.MAX_PRICE_LESS_THAN_MIN)
+        return
+
+    data["max_price"] = int(max_price)
 
     user_id = message.from_user.id
 
@@ -255,7 +251,3 @@ async def process_max_price(message: types.Message, state: FSMContext):
     await message.answer(additional_message)
 
     await state.finish()
-
-
-async def process_max_price_invalid(message: types.Message):
-    await message.reply(messages.SET_MAX_PRICE_INVALID)

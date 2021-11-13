@@ -21,3 +21,4 @@ python3 bot_zakupki/bot/launch.py
 ```
 
 
+* * * * * /usr/local/bin/python3 /app/bot_zakupki/crons/site_parsing.py 2>&1
