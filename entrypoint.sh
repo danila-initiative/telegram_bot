@@ -11,7 +11,7 @@ env | while read -r LINE; do  # читаем результат команды '
     echo "${VAR} DEFAULT=\"${VAL}\"" >> /etc/security/pam_env.conf
 done
 
-cron
-python3 /app/bot_zakupki/bot/launch.py
+cron && tail -f /var/log/cron.log
+#python3 /app/bot_zakupki/bot/launch.py
 
 exec "$@"

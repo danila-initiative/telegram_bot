@@ -1,5 +1,4 @@
 # type: ignore
-import datetime
 
 from aiogram import Dispatcher
 from aiogram import types
@@ -11,6 +10,7 @@ from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
 from bot_zakupki.common import consts
 from bot_zakupki.common import db
+from bot_zakupki.common import user_info
 
 
 def register_handlers_common(dp: Dispatcher):
@@ -39,19 +39,11 @@ def register_handlers_common(dp: Dispatcher):
 
 async def cmd_start(message: types.Message, state: FSMContext):
     await state.finish()
-    logger.info(
-        f'Command "/{commands.START}" was used by user {message.from_user.id}'
-    )
-
     user_id = message.from_user.id
-    user = db.get_user_by_user_id(user_id=user_id)
-    if user is None:
-        db.insert_new_user(user_id=user_id)
-    elif not user.bot_is_active:
-        logger.info(f"user {user_id} was not active")
-        now = datetime.datetime.now().replace(microsecond=0)
-        data = {"bot_start_date": now, "bot_is_active": 1}
-        db.update_user_by_user_id(user_id=user_id, column_values=data)
+
+    logger.info(f'Command "/{commands.START}" was used by user {user_id}')
+
+    user_info.create_user_or_mark_active(user_id=user_id)
 
     await message.answer(
         messages.CMD_START_MSG, reply_markup=types.ReplyKeyboardRemove()
@@ -61,7 +53,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 async def cmd_help(message: types.Message, state: FSMContext):
     await state.finish()
     logger.info(
-        f'Command "/{commands.HELP}" was used by user {message.from_user.id}'
+        messages.command_log_formation(commands.HELP, message.from_user.id)
     )
 
     await message.answer(
@@ -90,7 +82,7 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
 async def cmd_stop(message: types.Message, state: FSMContext):
     await state.finish()
     logger.info(
-        f'Command "/{commands.STOP}" was used by user {message.from_user.id}'
+        messages.command_log_formation(commands.STOP, message.from_user.id)
     )
 
     user_id = message.from_user.id
@@ -105,8 +97,9 @@ async def cmd_stop(message: types.Message, state: FSMContext):
 async def cmd_end_trial_period(message: types.Message, state: FSMContext):
     await state.finish()
     logger.info(
-        f'Command "/{commands.END_TRIAL_PERIOD}" '
-        f"was used by user {message.from_user.id}"
+        messages.command_log_formation(
+            commands.END_TRIAL_PERIOD, message.from_user.id
+        )
     )
     user_id = message.from_user.id
 

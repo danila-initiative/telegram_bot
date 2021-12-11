@@ -12,6 +12,13 @@ from bot_zakupki.common import consts
 from bot_zakupki.common import dates
 from bot_zakupki.common import models
 
+USER_USER_ID = "user_id"
+USER_FIRST_BOT_START_DATE = "first_bot_start_date"
+USER_BOT_START_DATE = "bot_start_date"
+USER_BOT_IS_ACTIVE = "bot_is_active"
+USER_SUBSCRIPTION_LAST_DAY = "subscription_last_day"
+USER_PAYMENT_LAST_DAY = "payment_last_day"
+
 
 # ===============Common===============
 
@@ -60,31 +67,6 @@ def check_db_exists(cursor: sqlite3.Cursor = base_cursor):
 # =============== user ===============
 
 
-def rows_to_user_model(rows: List[Tuple]) -> List[models.User]:
-    users = []
-
-    for row in rows:
-        trial_start_date = None
-        trial_end_date = None
-        if row[5] is not None or row[6] is not None:
-            trial_start_date = dates.sqlite_date_to_datetime(row[5])
-            trial_end_date = dates.sqlite_date_to_datetime(row[6])
-        user = models.User(
-            id=row[0],
-            user_id=row[1],
-            first_bot_start_date=row[2],
-            bot_start_date=row[3],
-            bot_is_active=bool(row[4]),
-            trial_start_date=trial_start_date,
-            trial_end_date=trial_end_date,
-            number_of_sending=row[7],
-            downtime_notification=bool(row[8]),
-        )
-        users.append(user)
-
-    return users
-
-
 def insert_new_user(
     user_id: str,
     connection: sqlite3.Connection = base_con,
@@ -125,7 +107,8 @@ def get_user_by_user_id(
     cursor.execute(sql, (user_id,))
     row = cursor.fetchone()
     if row is not None:
-        return rows_to_user_model([row])[0]
+        user = models.User(*row)
+        return user
 
     return None
 
@@ -137,7 +120,7 @@ def get_all_users(
     cursor.execute(sql)
     rows = cursor.fetchall()
     if rows:
-        return rows_to_user_model(rows)
+        return [models.User(row) for row in rows]
 
     return None
 
@@ -244,7 +227,7 @@ def get_all_search_queries_by_user_id(
     cursor.execute(sql, (user_id,))
     rows = cursor.fetchall()
 
-    return rows_to_search_query_model(rows)
+    return [models.SearchQuery(*row) for row in rows]
 
 
 def get_all_active_search_queries(
