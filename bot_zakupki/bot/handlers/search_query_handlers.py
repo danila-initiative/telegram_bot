@@ -6,7 +6,6 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State
 from aiogram.dispatcher.filters.state import StatesGroup
-from loguru import logger
 
 from bot_zakupki.bot.handlers import change_query_handlers as cqh
 from bot_zakupki.bot.handlers import commands
@@ -63,52 +62,17 @@ def register_handlers_search_query(dp: Dispatcher):
 
 async def new_query(message: types.Message):
     user_id = message.from_user.id
-    user = db.get_user_by_user_id(user_id=user_id)
-    now = datetime.datetime.now().replace(microsecond=0)
 
-    trial_period_state = user_info.get_trial_period_state(user=user, date=now)
-
-    search_queries = db.get_all_search_queries_by_user_id(user_id=user_id)
-    number_of_search_queries = len(search_queries)
-
-    active_search_queries = db.get_all_active_search_queries_by_user_id(
-        user_id=user_id, date=now
-    )
-    number_of_active_search_queries = len(active_search_queries)
-
-    logger.debug(
-        f"user id: {message.from_user.id}; "
-        f"trial period state: {trial_period_state}; "
-        f"number_of_search_queries: {number_of_search_queries}; "
-        f"number_of_active_search_queries: {number_of_active_search_queries}"
+    can_add_request, trial_period_state = user_info.can_add_request(
+        user_id=user_id
     )
 
-    # пробный период
-    # нельзя добавить больше 3-х запросов
-    if (
-        trial_period_state == models.TrialPeriodState.TRIAL_PERIOD
-        and number_of_active_search_queries
-        >= consts.MAX_QUERIES_IN_TRIAL_PERIOD
-    ):
-        await message.answer(
-            messages.CANNOT_ADD_MORE_QUERY_IN_TRIAL_PERIOD,
-            reply_markup=types.ReplyKeyboardRemove(),
-        )
-        return
-
-    # пробный период закончился
-    # нельзя добавить больше 3 неактивных запросов
-    if (
-        trial_period_state == models.TrialPeriodState.TRIAL_PERIOD_IS_OVER
-        and number_of_search_queries - number_of_active_search_queries
-        >= consts.MAX_NONACTIVE_QUERIES
-    ):
-        logger.debug(
-            f"number of active queries: {number_of_active_search_queries}; "
-            f"number of all queries: {number_of_search_queries}"
+    if not can_add_request:
+        warning_message = user_info.get_message_cannot_add_query(
+            trial_period_state
         )
         await message.answer(
-            messages.TOO_MANY_NOT_ACTIVE_QUERIES,
+            warning_message,
             reply_markup=types.ReplyKeyboardRemove(),
         )
         return
@@ -147,7 +111,7 @@ async def process_location(message: types.Message, state: FSMContext):
 
     markup = types.ReplyKeyboardRemove()
 
-    await message.answer(messages.SET_MINIMUM_PRICE, reply_markup=markup)
+    await message.answer(messages.SET_MIN_PRICE, reply_markup=markup)
 
 
 async def process_location_invalid(message: types.Message):
@@ -160,9 +124,8 @@ async def process_location_invalid(message: types.Message):
 async def process_min_price(message: types.Message, state: FSMContext):
     # проверка на валидность минимальной цены
     min_price = utils.delete_all_spaces(message.text)
-    logger.debug(f"min_price: {min_price}")
     if not min_price.isdigit() or int(min_price) < 0:
-        await message.reply(messages.SET_MINIMUM_PRICE_INVALID)
+        await message.reply(messages.SET_MIN_PRICE_INVALID)
         return
 
     min_price = int(min_price)
@@ -173,7 +136,7 @@ async def process_min_price(message: types.Message, state: FSMContext):
     else:
         await SearchParameters.max_price.set()
 
-    await message.answer(messages.SET_MAXIMUM_PRICE)
+    await message.answer(messages.SET_MAX_PRICE)
 
 
 async def process_max_price(message: types.Message, state: FSMContext):
@@ -184,11 +147,11 @@ async def process_max_price(message: types.Message, state: FSMContext):
     )
 
     if valid == models.MaxPriceValidation.NOT_A_NUMBER:
-        await message.answer(messages.MAX_PRICE_NOT_A_NUMBER)
+        await message.answer(messages.SET_MAX_PRICE_NOT_A_NUMBER)
         return
 
     if valid == models.MaxPriceValidation.LESS_THAT_MIN_PRICE:
-        await message.reply(messages.MAX_PRICE_LESS_THAN_MIN)
+        await message.reply(messages.SET_MAX_PRICE_LESS_THAN_MIN)
         return
 
     data["max_price"] = int(max_price)
@@ -208,35 +171,24 @@ async def process_max_price(message: types.Message, state: FSMContext):
     trial_period_state = user_info.get_trial_period_state(user=user, date=now)
 
     # пробный период не начался
-    # добавляем дату начала и окончания пробного периода
-    if (
-        trial_period_state
-        == models.TrialPeriodState.TRIAL_PERIOD_HAS_NOT_STARTED
-    ):
-        last_sub_day = now + datetime.timedelta(days=consts.TRIAL_PERIOD)
+    # добавляем дату окончания пробного периода
+    if trial_period_state == models.TrialPeriodState.HAS_NOT_STARTED:
+        sub_last_day = now + datetime.timedelta(days=consts.TRIAL_PERIOD_DAYS)
 
         user_data_update = {
-            "trial_start_date": now,
-            "trial_end_date": last_sub_day,
+            db.USER_SUBSCRIPTION_LAST_DAY: sub_last_day,
         }
         db.update_user_by_user_id(
-            user_id=message.from_user.id, column_values=user_data_update
+            user_id=user_id, column_values=user_data_update
         )
 
-        query["subscription_last_day"] = last_sub_day
-        additional_message = f"Дата окончания пробного периода: {last_sub_day}"
+        additional_message = f"Дата окончания пробного периода: {sub_last_day}"
 
     # сейчас пробный период
     # дата окончания подписки - дата окончания пробного периода
     if trial_period_state == models.TrialPeriodState.TRIAL_PERIOD:
-        last_sub_day = user.trial_end_date
-
-        query["subscription_last_day"] = last_sub_day
+        last_sub_day = user.subscription_last_day
         additional_message = f"Дата окончания пробного периода: {last_sub_day}"
-
-    # пробный период закончился
-    if trial_period_state == models.TrialPeriodState.TRIAL_PERIOD_IS_OVER:
-        additional_message = "Оплатить новый запрос можно по ссылке: link"
 
     db.insert_new_search_query(column_values=query)
 

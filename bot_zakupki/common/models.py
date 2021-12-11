@@ -3,51 +3,109 @@ import datetime
 import typing
 from enum import Enum
 
+from bot_zakupki.common import dates
+
+
+class Region:
+    MOSCOW = "Москва"
+    MOSCOW_REGION = "Московская область"
+    FAR_EASTERN_FEDERAL_DISTRICT = "Дальневосточный федеральный округ"
+    VOLGA_FEDERAL_DISTRICT = "Приволжский федеральный округ"
+    NORTHWESTERN_FEDERAL_DISTRICT = "Северо-Западный федеральный округ"
+    NORTH_CAUCASIAN_FEDERAL_DISTRICT = "Северо-Кавказский федеральный округ"
+    SIBERIAN_FEDERAL_DISTRICT = "Сибирский федеральный округ"
+    URAL_FEDERAL_DISTRICT = "Уральский федеральный округ"
+    CENTRAL_FEDERAL_DISTRICT = "Центральный федеральный округ"
+    SOUTHERN_FEDERAL_DISTRICT = "Южный федеральный округ"
+
+
 CUSTOMER_PLACES = {
-    "Москва": "5277335",
-    "Московская область": "5277327",
-    "Дальневосточный федеральный округ": "5277399",
-    "Приволжский федеральный округ": "5277362",
-    "Северо-Западный федеральный округ": "5277336",
-    "Северо-Кавказский федеральный округ": "9409197",
-    "Сибирский федеральный округ": "5277384",
-    "Уральский федеральный округ": "5277377",
-    "Центральный федеральный округ": "5277317",
-    "Южный федеральный округ": "6325041",
+    Region.MOSCOW: "5277335",
+    Region.MOSCOW_REGION: "5277327",
+    Region.FAR_EASTERN_FEDERAL_DISTRICT: "5277399",
+    Region.VOLGA_FEDERAL_DISTRICT: "5277362",
+    Region.NORTHWESTERN_FEDERAL_DISTRICT: "5277336",
+    Region.NORTH_CAUCASIAN_FEDERAL_DISTRICT: "9409197",
+    Region.SIBERIAN_FEDERAL_DISTRICT: "5277384",
+    Region.URAL_FEDERAL_DISTRICT: "5277377",
+    Region.CENTRAL_FEDERAL_DISTRICT: "5277317",
+    Region.SOUTHERN_FEDERAL_DISTRICT: "6325041",
 }
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass()
 class User:
-    id: int
+    unique_id: int
     user_id: str
     first_bot_start_date: datetime.datetime
     bot_start_date: datetime.datetime
     bot_is_active: bool
-    trial_start_date: typing.Optional[datetime.datetime]
-    trial_end_date: typing.Optional[datetime.datetime]
-    number_of_sending: int
-    downtime_notification: bool
+    max_number_of_queries: int
+    subscription_last_day: typing.Optional[datetime.datetime] = None
+    payment_last_day: typing.Optional[datetime.datetime] = None
+
+    def __init__(
+        self,
+        unique_id: int,
+        user_id: str,
+        first_bot_start_date: str,
+        bot_start_date: str,
+        bot_is_active: int,
+        max_number_of_queries: int,
+        subscription_last_day: typing.Optional[str],
+        payment_last_day: typing.Optional[str],
+    ):
+        self.unique_id = unique_id
+        self.user_id = user_id
+        self.first_bot_start_date = dates.sqlite_date_to_datetime(
+            first_bot_start_date
+        )
+        self.bot_start_date = dates.sqlite_date_to_datetime(bot_start_date)
+        self.bot_is_active = bool(bot_is_active)
+        if subscription_last_day:
+            self.subscription_last_day = dates.sqlite_date_to_datetime(
+                subscription_last_day
+            )
+        if payment_last_day:
+            self.payment_last_day = dates.sqlite_date_to_datetime(
+                payment_last_day
+            )
+        self.max_number_of_queries = max_number_of_queries
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass()
 class SearchQuery:
-    id: int
+    unique_id: int
     user_id: str
     search_string: str
     location: str
+    min_price: int
+    max_price: int
     created_at: datetime.datetime
-    subscription_last_day: typing.Optional[datetime.datetime]
-    payment_last_day: typing.Optional[datetime.datetime]
-    deleted: bool
-    min_price: typing.Optional[int]
-    max_price: typing.Optional[int]
+
+    def __init__(
+        self,
+        unique_id: int,
+        user_id: str,
+        search_string: str,
+        location: str,
+        min_price: int,
+        max_price: int,
+        created_at: str,
+    ):
+        self.unique_id = unique_id
+        self.user_id = user_id
+        self.search_string = search_string
+        self.location = location
+        self.min_price = min_price
+        self.max_price = max_price
+        self.created_at = dates.sqlite_date_to_datetime(created_at)
 
 
 class TrialPeriodState(str, Enum):
-    TRIAL_PERIOD_HAS_NOT_STARTED = "trial_period_has_not_started"
+    HAS_NOT_STARTED = "trial_period_has_not_started"
     TRIAL_PERIOD = "trial_period"
-    TRIAL_PERIOD_IS_OVER = "trial_period_is_over"
+    IS_OVER = "trial_period_is_over"
 
 
 class MaxPriceValidation(str, Enum):
