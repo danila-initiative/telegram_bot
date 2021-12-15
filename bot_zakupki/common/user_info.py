@@ -80,8 +80,5 @@ def get_message_cannot_add_query(trial_period_state: str) -> str:
     if trial_period_state == models.TrialPeriodState.TRIAL_PERIOD:
         return messages.CannotAddMoreQueries.TRIAL_PERIOD_LIMIT
 
-    if (
-        trial_period_state == models.TrialPeriodState.IS_OVER
-        and not can_add_request
-    ):
+    if trial_period_state == models.TrialPeriodState.IS_OVER and not can_add_request:
         return messages.CannotAddMoreQueries.COMMON_PERIOD_LIMIT

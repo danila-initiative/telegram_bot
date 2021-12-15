@@ -25,9 +25,7 @@ class SearchParameters(StatesGroup):
 
 
 def register_handlers_search_query(dp: Dispatcher):
-    dp.register_message_handler(
-        new_query, commands=commands.ADD_NEW_QUERY, state="*"
-    )
+    dp.register_message_handler(new_query, commands=commands.ADD_NEW_QUERY, state="*")
     dp.register_message_handler(
         process_search_string,
         lambda message: not message.text.startswith("/"),
@@ -63,14 +61,10 @@ def register_handlers_search_query(dp: Dispatcher):
 async def new_query(message: types.Message):
     user_id = message.from_user.id
 
-    can_add_request, trial_period_state = user_info.can_add_request(
-        user_id=user_id
-    )
+    can_add_request, trial_period_state = user_info.can_add_request(user_id=user_id)
 
     if not can_add_request:
-        warning_message = user_info.get_message_cannot_add_query(
-            trial_period_state
-        )
+        warning_message = user_info.get_message_cannot_add_query(trial_period_state)
         await message.answer(
             warning_message,
             reply_markup=types.ReplyKeyboardRemove(),
@@ -178,9 +172,7 @@ async def process_max_price(message: types.Message, state: FSMContext):
         user_data_update = {
             db.USER_SUBSCRIPTION_LAST_DAY: sub_last_day,
         }
-        db.update_user_by_user_id(
-            user_id=user_id, column_values=user_data_update
-        )
+        db.update_user_by_user_id(user_id=user_id, column_values=user_data_update)
 
         additional_message = f"Дата окончания пробного периода: {sub_last_day}"
 

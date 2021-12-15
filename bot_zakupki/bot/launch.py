@@ -19,14 +19,10 @@ from bot_zakupki.common import dates
 
 logger.remove()
 if consts.DEBUG:
-    logger.add(
-        f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="DEBUG"
-    )
+    logger.add(f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="DEBUG")
     logger.add(sys.stdout, level="DEBUG")
 else:
-    logger.add(
-        f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="INFO"
-    )
+    logger.add(f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="INFO")
     logger.add(sys.stdout, level="INFO")
 
 
@@ -44,9 +40,7 @@ async def set_commands(bot: Bot):
             command=commands.CHANGE_QUERY,
             description=commands.CHANGE_QUERY_DESCRIPTION,
         ),
-        types.BotCommand(
-            command=commands.HELP, description=commands.HELP_DESCRIPTION
-        ),
+        types.BotCommand(command=commands.HELP, description=commands.HELP_DESCRIPTION),
     ]
 
     if consts.DEBUG:

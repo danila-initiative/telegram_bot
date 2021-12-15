@@ -18,12 +18,13 @@ WORKDIR /app
 COPY cron_file_testing /etc/cron.d/cron_file
 RUN chmod 0644 /etc/cron.d/cron_file
 RUN crontab /etc/cron.d/cron_file
-RUN touch /var/log/cron.log
 
 
 # Запускалка тестов
 COPY ./runtests.sh ./runtests.sh
 COPY ./entrypoint.sh ./entrypoint.sh
+
+COPY ./Makefile ./Makefile
 
 # Окружение
 COPY ./requirements.txt	./requirements.txt

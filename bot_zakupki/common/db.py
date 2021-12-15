@@ -120,7 +120,7 @@ def get_all_users(
     cursor.execute(sql)
     rows = cursor.fetchall()
     if rows:
-        return [models.User(row) for row in rows]
+        return [models.User(*row) for row in rows]
 
     return None
 
@@ -180,9 +180,7 @@ def insert_new_search_query(
     values = [tuple(column_values.values())]
     placeholders = ", ".join("?" * len(column_values.keys()))
     cursor.executemany(
-        f"INSERT INTO search_query "
-        f"({columns}) "
-        f"VALUES ({placeholders})",
+        f"INSERT INTO search_query " f"({columns}) " f"VALUES ({placeholders})",
         values,
     )
     connection.commit()
@@ -198,9 +196,7 @@ def update_search_query(
     columns += " = ?"
 
     values = tuple(column_values.values())
-    cursor.execute(
-        f"UPDATE search_query SET {columns} WHERE id = {query_id}", values
-    )
+    cursor.execute(f"UPDATE search_query SET {columns} WHERE id = {query_id}", values)
     connection.commit()
 
 

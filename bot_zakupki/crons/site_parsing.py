@@ -38,9 +38,7 @@ def start_parsing():
 
         logger.debug(f"query_id: {query.id}; url: {url}")
         page = parser.get_page_by_url(url)
-        result = parser.parse_result_page(
-            page=page, search_string=query.search_string
-        )
+        result = parser.parse_result_page(page=page, search_string=query.search_string)
 
         if result is None:
             continue

@@ -57,9 +57,7 @@ class User:
     ):
         self.unique_id = unique_id
         self.user_id = user_id
-        self.first_bot_start_date = dates.sqlite_date_to_datetime(
-            first_bot_start_date
-        )
+        self.first_bot_start_date = dates.sqlite_date_to_datetime(first_bot_start_date)
         self.bot_start_date = dates.sqlite_date_to_datetime(bot_start_date)
         self.bot_is_active = bool(bot_is_active)
         if subscription_last_day:
@@ -67,9 +65,7 @@ class User:
                 subscription_last_day
             )
         if payment_last_day:
-            self.payment_last_day = dates.sqlite_date_to_datetime(
-                payment_last_day
-            )
+            self.payment_last_day = dates.sqlite_date_to_datetime(payment_last_day)
         self.max_number_of_queries = max_number_of_queries
 
 
