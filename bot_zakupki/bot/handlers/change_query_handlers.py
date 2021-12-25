@@ -51,7 +51,10 @@ async def cmd_choose_query_to_change(
         user_id=user_id,
     )
 
-    answer = messages.all_queries_messages_formation(queries=queries)
+    user = db.get_user_by_user_id(user_id=user_id)
+    answer = messages.all_queries_messages_formation(
+        queries=queries, subscription_last_day=user.subscription_last_day
+    )
     answer += "\n"
     answer += messages.WHICH_QUERY_CHANGE
 
@@ -78,7 +81,7 @@ async def callback_change_query(call: types.CallbackQuery):
     )
 
     number = call.data.split("_")[-1]
-    user_data[user_id] = (number, queries[int(number) - 1].id)
+    user_data[user_id] = (number, queries[int(number) - 1].unique_id)
 
     await call.message.answer(
         f"Введите новую ключевую строку для запроса {number}: ",
@@ -108,11 +111,11 @@ async def process_change_max_price(message: types.Message, state: FSMContext):
     )
 
     if valid == models.MaxPriceValidation.NOT_A_NUMBER:
-        await message.answer(messages.MAX_PRICE_NOT_A_NUMBER)
+        await message.answer(messages.SET_MAX_PRICE_NOT_A_NUMBER)
         return
 
     if valid == models.MaxPriceValidation.LESS_THAT_MIN_PRICE:
-        await message.reply(messages.MAX_PRICE_LESS_THAN_MIN)
+        await message.answer(messages.SET_MAX_PRICE_LESS_THAN_MIN)
         return
 
     data["max_price"] = max_price

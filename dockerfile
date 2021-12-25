@@ -25,6 +25,8 @@ RUN touch /var/log/cron.log
 COPY ./runtests.sh ./runtests.sh
 COPY ./entrypoint.sh ./entrypoint.sh
 
+COPY ./Makefile ./Makefile
+
 # Окружение
 COPY ./requirements.txt	./requirements.txt
 RUN /usr/local/bin/python -m pip install --upgrade pip

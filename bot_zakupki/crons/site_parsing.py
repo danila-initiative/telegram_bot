@@ -15,7 +15,10 @@ def start_parsing():
     logger.info(f"Cron task {__file__} launched.")
     # Получаем список всех активных запросов из базы
     now = datetime.datetime.now().replace(microsecond=0)
-    active_queries = db.get_all_active_search_queries(date=now)
+    # TODO: переписать этот запрос
+    # Взять людей с активной подпиской и для них выбрать запросы
+    # в соответствии с подпиской (1, 3 или 5 запросов)
+    active_queries = db.get_all_search_queries()
 
     publish_date = now + datetime.timedelta(days=consts.PUBLISH_DELTA)
     publish_date = dates.format_date_for_request(publish_date)
@@ -36,7 +39,7 @@ def start_parsing():
 
         url = parser.request_formation(params)
 
-        logger.debug(f"query_id: {query.id}; url: {url}")
+        logger.debug(f"query_id: {query.unique_id}; url: {url}")
         page = parser.get_page_by_url(url)
         result = parser.parse_result_page(
             page=page, search_string=query.search_string
@@ -45,7 +48,7 @@ def start_parsing():
         if result is None:
             continue
 
-        results[query.id] = result
+        results[query.unique_id] = result
 
         time.sleep(random.randint(3, 10))
 

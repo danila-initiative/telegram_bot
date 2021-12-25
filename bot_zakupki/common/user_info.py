@@ -8,6 +8,14 @@ from bot_zakupki.common import db
 from bot_zakupki.common import models
 
 
+class NoUserWithUserId(Exception):
+    pass
+
+
+class UnexpectedTrialState(Exception):
+    pass
+
+
 def is_user_exists_and_active(user_id: str) -> tuple[bool, bool]:
     user = db.get_user_by_user_id(user_id=user_id)
     if not user:
@@ -45,6 +53,8 @@ def get_trial_period_state(
 
 def can_add_request(user_id: str) -> tuple[bool, models.TrialPeriodState]:
     user = db.get_user_by_user_id(user_id=user_id)
+    if user is None:
+        raise NoUserWithUserId
     now = datetime.datetime.now().replace(microsecond=0)
 
     trial_period_state = get_trial_period_state(user=user, date=now)
@@ -68,7 +78,8 @@ def can_add_request(user_id: str) -> tuple[bool, models.TrialPeriodState]:
         return False, trial_period_state
 
     if (
-        now < user.subscription_last_day
+        user.subscription_last_day
+        and now < user.subscription_last_day
         and len(search_queries) < user.max_number_of_queries
     ):
         return True, trial_period_state
@@ -80,8 +91,7 @@ def get_message_cannot_add_query(trial_period_state: str) -> str:
     if trial_period_state == models.TrialPeriodState.TRIAL_PERIOD:
         return messages.CannotAddMoreQueries.TRIAL_PERIOD_LIMIT
 
-    if (
-        trial_period_state == models.TrialPeriodState.IS_OVER
-        and not can_add_request
-    ):
+    if trial_period_state == models.TrialPeriodState.IS_OVER:
         return messages.CannotAddMoreQueries.COMMON_PERIOD_LIMIT
+
+    raise UnexpectedTrialState

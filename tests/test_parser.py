@@ -16,12 +16,8 @@ from bot_zakupki.common import parser
             models.Result(
                 search_string="лифт",
                 number_of_purchase="№ 0373200041521001009",
-                publish_date=datetime.datetime.strptime(
-                    "07.09.2021", "%d.%m.%Y"
-                ),
-                finish_date=datetime.datetime.strptime(
-                    "24.09.2021", "%d.%m.%Y"
-                ),
+                publish_date=datetime.datetime.strptime("07.09.2021", "%d.%m.%Y"),
+                finish_date=datetime.datetime.strptime("24.09.2021", "%d.%m.%Y"),
                 price=9175661,
                 subject_of_purchase="Выполнение работ по замене лифтового оборудования в рамках капитального ремонта в ГБУ ГЦМ",
                 link="https://zakupki.gov.ru/epz/order/notice/ea44/view/common-info.html?regNumber=0373200041521001009",

@@ -21,6 +21,12 @@ def format_date_for_request(date: datetime.datetime) -> str:
     return date.date().strftime("%d.%m.%Y")
 
 
+def format_date_for_msg(date: datetime.datetime) -> str:
+    # example: 04.11.2021
+
+    return date.date().strftime("%d.%m.%Y")
+
+
 def get_current_time_for_db():
     return datetime.datetime.now().replace(microsecond=0)
 
