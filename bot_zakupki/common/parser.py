@@ -49,7 +49,9 @@ def get_page_by_url(url: str) -> Response:
 
 
 @logger.catch
-def parse_result_page(page: Response, search_string) -> Optional[list[models.Result]]:
+def parse_result_page(
+    page: Response, search_string
+) -> Optional[list[models.Result]]:
     """Return all results with key words in purchase subject"""
     results = list()
 
@@ -106,7 +108,9 @@ def parse_result_page(page: Response, search_string) -> Optional[list[models.Res
             if letter.isdigit():
                 new_price += letter
 
-        customer = i.find("div", class_="registry-entry__body-href").text.strip()
+        customer = i.find(
+            "div", class_="registry-entry__body-href"
+        ).text.strip()
         customer = customer.split()
         customer = " ".join(customer)
 

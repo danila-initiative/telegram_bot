@@ -1,11 +1,9 @@
-# import datetime
-# import sqlite3
-#
-# import pytest
-#
-# from bot_zakupki.common import dates
-# from bot_zakupki.common import db
-# from bot_zakupki.common import models
+import datetime
+
+from bot_zakupki.common import db
+from bot_zakupki.common import models
+
+
 #
 #
 # @pytest.fixture(scope="function")
@@ -94,65 +92,41 @@
 #         )
 #
 #     yield cursor
-#
-#
-# def test_insert_new_search_query(setup_db):
-#     cursor = setup_db.cursor()
-#     res_before = db.get_all_search_queries(cursor)
-#     data = {
-#         "user_id": 123456,
-#         "search_string": "search_string",
-#         "location": "Москва",
-#     }
-#
-#     db.insert_new_search_query(
-#         column_values=data, connection=setup_db, cursor=cursor
-#     )
-#     res_after = db.get_all_search_queries(cursor)
-#
-#     now = datetime.datetime.now().replace(microsecond=0)
-#
-#     expected_result = models.SearchQuery(
-#         id=1,
-#         user_id="123456",
-#         search_string="search_string",
-#         location="Москва",
-#         min_price=0,
-#         max_price=None,
-#         created_at=now,
-#         subscription_last_day=None,
-#         payment_last_day=None,
-#         deleted=bool(0),
-#     )
-#
-#     assert res_before == []
-#     assert res_after == [expected_result]
-#
-#
-# def test_get_all_search_queries_by_user_id(setup_db_with_data):
-#     cursor = setup_db_with_data
-#     res = db.get_all_search_queries_by_user_id("123456", cursor)
-#
-#     assert len(res) == 3
-#     for row in res:
-#         assert row.user_id == "123456"
-#
-#
-# def test_get_all_active_search_queries_by_user_id(setup_db_with_data):
-#     today = "2021-07-15 10:10:00"
-#     cursor = setup_db_with_data
-#     res = db.get_all_active_search_queries_by_user_id(
-#         "123456", dates.sqlite_date_to_datetime(today), cursor
-#     )
-#
-#     assert len(res) == 2
-#     for row in res:
-#         assert row.subscription_last_day > dates.sqlite_date_to_datetime(today)
-#
-#
-# def test_get_all_results(setup_db):
-#     cursor = setup_db.cursor()
-#     rows = db.get_all_results(cursor)
+
+
+def test_insert_new_search_query(setup_db):
+    res_before = db.get_all_search_queries()
+    data = {
+        "user_id": 123456,
+        "search_string": "search_string",
+        "location": "Москва",
+        "min_price": 0,
+        "max_price": 100000,
+    }
+
+    db.insert_new_search_query(
+        column_values=data
+    )
+    res_after = db.get_all_search_queries()
+
+    now = datetime.datetime.now().replace(microsecond=0)
+
+    expected_result = models.SearchQuery(
+        unique_id=1,
+        user_id="123456",
+        search_string="search_string",
+        location="Москва",
+        min_price=0,
+        max_price=100000,
+        created_at=now,
+    )
+
+    assert res_before == []
+    assert res_after == [expected_result]
+
+
+# def test_insert_get_all_results(setup_db):
+#     rows = db.get_all_results()
 #     assert len(rows) == 0
 #
 #     date = dates.res_date_to_datetime("03.07.2021")
@@ -168,8 +142,8 @@
 #         customer="customer 1",
 #     )
 #
-#     db.insert_results({124124: [result], 235423: [result]}, setup_db, cursor)
-#     rows = db.get_all_results(cursor)
+#     db.insert_results({124124: [result], 235423: [result]})
+#     rows = db.get_all_results()
 #
 #     expected_results = [
 #         models.Result(
@@ -182,7 +156,6 @@
 #             link="http://dsdgsdgsdgsd.com",
 #             customer="customer 1",
 #             location=None,
-#             query_id=124124,
 #         ),
 #         models.Result(
 #             search_string="string 1",
@@ -194,7 +167,6 @@
 #             link="http://dsdgsdgsdgsd.com",
 #             customer="customer 1",
 #             location=None,
-#             query_id=235423,
 #         ),
 #     ]
 #

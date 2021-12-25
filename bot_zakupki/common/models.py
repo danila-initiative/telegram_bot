@@ -57,7 +57,9 @@ class User:
     ):
         self.unique_id = unique_id
         self.user_id = user_id
-        self.first_bot_start_date = dates.sqlite_date_to_datetime(first_bot_start_date)
+        self.first_bot_start_date = dates.sqlite_date_to_datetime(
+            first_bot_start_date
+        )
         self.bot_start_date = dates.sqlite_date_to_datetime(bot_start_date)
         self.bot_is_active = bool(bot_is_active)
         if subscription_last_day:
@@ -65,7 +67,9 @@ class User:
                 subscription_last_day
             )
         if payment_last_day:
-            self.payment_last_day = dates.sqlite_date_to_datetime(payment_last_day)
+            self.payment_last_day = dates.sqlite_date_to_datetime(
+                payment_last_day
+            )
         self.max_number_of_queries = max_number_of_queries
 
 
@@ -87,7 +91,7 @@ class SearchQuery:
         location: str,
         min_price: int,
         max_price: int,
-        created_at: str,
+        created_at: typing.Union[str, datetime.datetime],
     ):
         self.unique_id = unique_id
         self.user_id = user_id
@@ -95,7 +99,10 @@ class SearchQuery:
         self.location = location
         self.min_price = min_price
         self.max_price = max_price
-        self.created_at = dates.sqlite_date_to_datetime(created_at)
+        if type(created_at) == str:
+            self.created_at = dates.sqlite_date_to_datetime(created_at)
+        elif type(created_at) == datetime.datetime:
+            self.created_at = created_at
 
 
 class TrialPeriodState(str, Enum):
@@ -113,15 +120,14 @@ class MaxPriceValidation(str, Enum):
 @dataclasses.dataclass(frozen=True)
 class Result:
     search_string: str
+    number_of_purchase: str
     publish_date: datetime.datetime
     finish_date: datetime.datetime
-    number_of_purchase: str
-    subject_of_purchase: str
     price: int
+    subject_of_purchase: str
     link: str
     customer: str
     location: typing.Union[str, None] = None
-    query_id: typing.Union[int, None] = None
 
     def to_tuple(self):
         return (
@@ -134,6 +140,20 @@ class Result:
             self.link,
             self.customer,
             self.location,
+        )
+
+    @staticmethod
+    def get_result_columns_name() -> tuple:
+        return (
+            "search_string",
+            "number_of_purchase",
+            "publish_date",
+            "finish_date",
+            "price",
+            "subject_of_purchase",
+            "link",
+            "customer",
+            "location",
         )
 
 

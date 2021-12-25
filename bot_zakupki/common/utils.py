@@ -23,8 +23,11 @@ def format_price_for_message(price: int) -> str:
 
 def check_and_process_max_price(
     max_price: str, min_price: int
-) -> typing.Tuple[models.MaxPriceValidation, typing.Union[None, int]]:
+) -> typing.Tuple[models.MaxPriceValidation, typing.Optional[int]]:
     max_price = delete_all_spaces(max_price)
+
+    if max_price.startswith("-") and max_price[1:].isdigit():
+        return models.MaxPriceValidation.LESS_THAT_MIN_PRICE, None
 
     if not max_price.isdigit():
         return models.MaxPriceValidation.NOT_A_NUMBER, None

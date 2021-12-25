@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 # Common commands
 START = "start"
 START_DESCRIPTION = "Старт"
@@ -24,3 +26,23 @@ STOP_DESCRIPTION = "[DEBUG] Имитация деактивации бота"
 
 END_TRIAL_PERIOD = "end_trial_period"
 END_TRIAL_PERIOD_DESCRIPTION = "[DEBUG] Имитация окончания пробного периода"
+
+
+@dataclass
+class Command:
+    name: str
+    description: str
+
+
+# commands to display in bot interface
+BOT_COMMANDS = [
+    Command(ADD_NEW_QUERY, ADD_NEW_QUERY_DESCRIPTION),
+    Command(SHOW_ALL_MY_QUERIES, SHOW_ALL_MY_QUERIES_DESCRIPTION),
+    Command(CHANGE_QUERY, CHANGE_QUERY_DESCRIPTION),
+    Command(HELP, HELP_DESCRIPTION),
+]
+
+DEBUG_COMMANDS = [
+    Command(STOP, STOP_DESCRIPTION),
+    Command(END_TRIAL_PERIOD, END_TRIAL_PERIOD_DESCRIPTION),
+]

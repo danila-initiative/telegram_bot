@@ -16,6 +16,8 @@ PATH_TO_DB = "/app/db/bot.sqlite"
 PATH_TO_MIGRATIONS = "bot_zakupki/storage/migrations"
 TABLES_NAME = ["result", "search_query", "user"]
 
+PATH_TO_TEST_DB = "/app/tests/db/bot_test.sqlite"
+
 BASE_URL = "https://zakupki.gov.ru/epz/order/extendedsearch/results.html?"
 
 DEBUG = os.getenv("DEBUG")

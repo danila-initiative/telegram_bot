@@ -1,4 +1,5 @@
-
+export TEST=true
+rm /app/tests/db/bot_test.sqlite
 find . -name "*.pyc" -exec rm {} \;
 coverage run -p --source=tests,bot_zakupki -m pytest
 # shellcheck disable=SC2181
@@ -10,5 +11,5 @@ if [ "$?" = "0" ]; then
     echo -e "\nrun \"coverage html\" for full report"
     echo -e "\n"
 fi
-
+export TEST=false
 
