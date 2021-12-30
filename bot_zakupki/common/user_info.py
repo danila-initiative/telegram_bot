@@ -78,9 +78,8 @@ def can_add_request(user_id: str) -> tuple[bool, models.TrialPeriodState]:
         return False, trial_period_state
 
     if (
-        user.subscription_last_day
-        and now < user.subscription_last_day
-        and len(search_queries) < user.max_number_of_queries
+        trial_period_state == models.TrialPeriodState.IS_OVER
+        and len(search_queries) < consts.MAX_QUERIES_IN_COMMON_PERIOD
     ):
         return True, trial_period_state
 
