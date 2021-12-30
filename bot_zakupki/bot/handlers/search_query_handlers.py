@@ -91,8 +91,11 @@ async def new_query(message: types.Message, state: FSMContext):
 
     await SearchParameters.search_string.set()
 
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    keyboard.add(messages.I_M_FEELING_LUCKY)
+
     await message.answer(
-        messages.NEW_QUERY_MSG, reply_markup=types.ReplyKeyboardRemove()
+        messages.NEW_QUERY_MSG, reply_markup=keyboard
     )
 
 
@@ -242,6 +245,8 @@ async def process_max_price(message: types.Message, state: FSMContext):
     )
 
     await message.answer(query_data_message)
-    await message.answer(additional_message)
+
+    if additional_message:
+        await message.answer(additional_message)
 
     await state.finish()
