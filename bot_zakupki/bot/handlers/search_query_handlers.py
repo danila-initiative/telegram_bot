@@ -94,9 +94,7 @@ async def new_query(message: types.Message, state: FSMContext):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     keyboard.add(messages.I_M_FEELING_LUCKY)
 
-    await message.answer(
-        messages.NEW_QUERY_MSG, reply_markup=keyboard
-    )
+    await message.answer(messages.NEW_QUERY_MSG, reply_markup=keyboard)
 
 
 # ========== SEARCH STRING ==========

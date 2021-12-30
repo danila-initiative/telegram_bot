@@ -203,6 +203,7 @@ def get_all_search_queries_by_user_id(
         SELECT *
         FROM search_query
         WHERE user_id = ?
+        ORDER BY created_at ASC
     """
 
     db_service.cursor.execute(sql, (user_id,))
@@ -212,6 +213,20 @@ def get_all_search_queries_by_user_id(
     db_service.connection.close()
 
     return [models.SearchQuery(*row) for row in rows]
+
+
+def delete_search_query(query_id: int):
+    db_service: DBService = get_connection_cursor()
+    sql = """
+            DELETE
+            FROM search_query
+            WHERE id = ?
+        """
+
+    db_service.cursor.execute(sql, (query_id,))
+
+    db_service.connection.commit()
+    db_service.connection.close()
 
 
 # =============== results ===============

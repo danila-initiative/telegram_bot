@@ -24,7 +24,9 @@ class ChangeSearchParameters(StatesGroup):
 
 def register_change_search_query(dp: Dispatcher):
     dp.register_message_handler(
-        cmd_choose_query_to_change, commands=commands.CHANGE_QUERY, state="*"
+        cmd_choose_query_to_change,
+        commands=[commands.CHANGE_QUERY, commands.DELETE_QUERY],
+        state="*",
     )
     dp.register_callback_query_handler(
         callback_change_query, Text(startswith="change_query_")
@@ -36,14 +38,29 @@ def register_change_search_query(dp: Dispatcher):
     dp.register_message_handler(
         process_change_max_price, state=ChangeSearchParameters.max_price
     )
+    dp.register_callback_query_handler(
+        callback_delete_query, Text(startswith="delete_query_")
+    )
+
+
+async def callback_delete_query(call: types.CallbackQuery):
+    user_id = call.from_user.id
+    queries = db.get_all_search_queries_by_user_id(
+        user_id=user_id,
+    )
+
+    number = int(call.data.split("_")[-1])
+
+    query_id = queries[number - 1].unique_id
+    db.delete_search_query(query_id)
+
+    await call.message.answer(f"Запрос номер {number} удален")
 
 
 async def cmd_choose_query_to_change(
     message: types.Message, state: FSMContext
 ):
-    print(f"State: {await state.get_state()}")
     await state.finish()
-    print(f"State: {await state.get_state()}")
     user_id = message.from_user.id
 
     # Получение всех запросов
@@ -59,11 +76,15 @@ async def cmd_choose_query_to_change(
     answer += messages.WHICH_QUERY_CHANGE
 
     # Формирование клавиатуры для этих запросов
+    prefix = "change_query"
+    if message.text == "/delete_query":
+        prefix = "delete_query"
+
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     buttons = []
     for i in range(len(queries)):
         button = types.InlineKeyboardButton(
-            text=str(i + 1), callback_data=f"change_query_{i + 1}"
+            text=str(i + 1), callback_data=f"{prefix}_{i + 1}"
         )
         buttons.append(button)
 

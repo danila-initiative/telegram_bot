@@ -20,6 +20,10 @@ SHOW_ALL_MY_QUERIES_DESCRIPTION = "Показать все мои запросы
 CHANGE_QUERY = "change_query"
 CHANGE_QUERY_DESCRIPTION = "Изменить мои запросы"
 
+DELETE_QUERY = "delete_query"
+DELETE_QUERY_DESCRIPTION = "Удалить запрос"
+
+
 # DEBUGGING
 STOP = "stop"
 STOP_DESCRIPTION = "[DEBUG] Имитация деактивации бота"
@@ -40,6 +44,7 @@ BOT_COMMANDS = [
     Command(SHOW_ALL_MY_QUERIES, SHOW_ALL_MY_QUERIES_DESCRIPTION),
     Command(CHANGE_QUERY, CHANGE_QUERY_DESCRIPTION),
     Command(HELP, HELP_DESCRIPTION),
+    Command(DELETE_QUERY, DELETE_QUERY_DESCRIPTION),
 ]
 
 DEBUG_COMMANDS = [
