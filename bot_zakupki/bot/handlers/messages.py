@@ -222,3 +222,12 @@ def all_queries_messages_formation(
 
 def command_log_formation(command: str, user_id: int):
     return f"Command `{command}` was used by user {user_id}"
+
+
+# ==========SUBSCRIPTION==========
+
+UPDATE_SUBSCRIPTION_MSG = (
+    "Текущая подписка: ПОТОМ ДОБАВИТЬ\n"
+    "Картинка с таблицей с ценами.\n"
+    "Подключить подписку:"
+)

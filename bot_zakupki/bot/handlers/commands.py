@@ -7,8 +7,11 @@ START_DESCRIPTION = "Старт"
 HELP = "help"
 HELP_DESCRIPTION = "Информация о боте"
 
-INFO = "info"
 CANCEL = "cancel"
+
+UPDATE_SUBSCRIPTION = "update_subscription"
+UPDATE_SUBSCRIPTION_DESCRIPTION = "Управление подпиской"
+
 
 # Query commands
 ADD_NEW_QUERY = "add_new_query"
@@ -40,11 +43,12 @@ class Command:
 
 # commands to display in bot interface
 BOT_COMMANDS = [
-    Command(ADD_NEW_QUERY, ADD_NEW_QUERY_DESCRIPTION),
     Command(SHOW_ALL_MY_QUERIES, SHOW_ALL_MY_QUERIES_DESCRIPTION),
+    Command(ADD_NEW_QUERY, ADD_NEW_QUERY_DESCRIPTION),
     Command(CHANGE_QUERY, CHANGE_QUERY_DESCRIPTION),
-    Command(HELP, HELP_DESCRIPTION),
     Command(DELETE_QUERY, DELETE_QUERY_DESCRIPTION),
+    Command(UPDATE_SUBSCRIPTION, UPDATE_SUBSCRIPTION_DESCRIPTION),
+    Command(HELP, HELP_DESCRIPTION),
 ]
 
 DEBUG_COMMANDS = [
