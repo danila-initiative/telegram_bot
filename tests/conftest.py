@@ -1,27 +1,41 @@
+import sys
+
 import pytest
 from aiogram.dispatcher import storage
 from aiogram.types import Chat
 from aiogram.types import Message
 from aiogram.types import User
+from loguru import logger
 
+from bot_zakupki.common import consts
+from bot_zakupki.common import dates
 from bot_zakupki.common import db
 
 
 @pytest.fixture
-def clear_db():
+def extra_logging():
+    db.delete_all_data()
+    logger.remove()
+    if consts.DEBUG:
+        logger.add(
+            f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="DEBUG"
+        )
+        logger.add(sys.stdout, level="DEBUG")
+    else:
+        logger.add(
+            f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="INFO"
+        )
+        logger.add(sys.stdout, level="INFO")
+
+
+@pytest.fixture
+def clear_db(extra_logging):
     db.delete_all_data()
 
 
 @pytest.fixture
 def setup_db(clear_db):
-    # if os.path.exists(consts.PATH_TO_TEST_DB):
-    #     os.remove(consts.PATH_TO_TEST_DB)
-    # conn = sqlite3.connect(consts.PATH_TO_TEST_DB)
-    # cursor = conn.cursor()
     db.init_db()
-
-    # yield conn
-    # conn.close()
 
 
 @pytest.fixture

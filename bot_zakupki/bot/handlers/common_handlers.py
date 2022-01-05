@@ -49,8 +49,8 @@ async def cmd_start_func(
     user_id = message.from_user.id
 
     logger.info(f'Command "/{commands.START}" was used by user {user_id}')
-
-    user_info.create_user_or_mark_active(user_id=user_id)
+    user = user_info.UserInfo(user_id=user_id)
+    user.create_or_mark_active()
 
     return messages.CMD_START_MSG, types.ReplyKeyboardRemove()
 

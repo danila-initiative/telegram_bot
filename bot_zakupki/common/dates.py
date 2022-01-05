@@ -9,6 +9,13 @@ def res_date_to_datetime(date: str) -> datetime.datetime:
     return datetime.datetime.strptime(date, "%d.%m.%Y")
 
 
+def get_current_time_db_format(date: datetime.datetime = None) -> str:
+    if date is None:
+        return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        return date.strftime("%Y-%m-%d %H:%M:%S")
+
+
 def format_date(current_date: datetime.datetime) -> str:
     # example: 2021-08-08
 
@@ -28,6 +35,10 @@ def format_date_for_msg(date: datetime.datetime) -> str:
 
 
 def get_current_time_for_db():
+    return datetime.datetime.now().replace(microsecond=0)
+
+
+def get_now_without_ms():
     return datetime.datetime.now().replace(microsecond=0)
 
 
