@@ -5,7 +5,7 @@ import sys
 
 from loguru import logger
 
-from bot_zakupki.bot import bot_service as b_serv
+from bot_zakupki.bot import bot_service
 from bot_zakupki.common import consts
 from bot_zakupki.common import dates
 
@@ -27,8 +27,10 @@ async def main():
     admins_ids = os.getenv("TELEGRAM_ACCESS_ID")[1:-1].split(",")
     api_token = os.getenv("ADMIN_TELEGRAM_API_TOKEN")
 
-    bot_service = b_serv.BotService(api_token=api_token, admins_ids=admins_ids)
-    await bot_service.run()
+    bot_instance = bot_service.BotService(
+        api_token=api_token, admins_ids=admins_ids
+    )
+    await bot_instance.run()
 
 
 if __name__ == "__main__":

@@ -33,6 +33,12 @@ CUSTOMER_PLACES = {
 }
 
 
+class TrialPeriodState(str, Enum):
+    HAS_NOT_STARTED = "trial_period_has_not_started"
+    TRIAL_PERIOD = "trial_period"
+    IS_OVER = "trial_period_is_over"
+
+
 @dataclasses.dataclass()
 class User:
     unique_id: int
@@ -103,12 +109,6 @@ class SearchQuery:
             self.created_at = dates.sqlite_date_to_datetime(created_at)
         elif type(created_at) == datetime.datetime:
             self.created_at = created_at
-
-
-class TrialPeriodState(str, Enum):
-    HAS_NOT_STARTED = "trial_period_has_not_started"
-    TRIAL_PERIOD = "trial_period"
-    IS_OVER = "trial_period_is_over"
 
 
 class MaxPriceValidation(str, Enum):

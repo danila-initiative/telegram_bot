@@ -72,7 +72,6 @@ def check_db_exists():
 # for tests
 def delete_all_data():
     db_service: DBService = get_connection_cursor()
-    print("!!!!!Удаляю данные")
     for table_name in consts.TABLES_NAME:
         db_service.cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
     db_service.connection.commit()

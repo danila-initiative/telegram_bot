@@ -61,7 +61,7 @@ class CannotAddMoreQueries:
         f"в пробный период равно {consts.MAX_QUERIES_IN_TRIAL_PERIOD}."
     )
     COMMON_PERIOD_LIMIT = (
-        "К сожалению нельзя добавить больше, "
+        "К сожалению, нельзя добавить больше, "
         f"чем {consts.MAX_QUERIES_IN_COMMON_PERIOD} поисковых запросов."
     )
 

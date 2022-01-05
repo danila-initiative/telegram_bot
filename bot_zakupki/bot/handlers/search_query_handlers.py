@@ -67,24 +67,14 @@ async def new_query(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
     try:
-        can_add_request, trial_period_state = user_info.can_add_request(
-            user_id=user_id
-        )
+        user = user_info.UserInfo(user_id=user_id)
     except user_info.NoUserWithUserId:
         logger.exception(f"There is no user with {user_id}. Find and burn him")
         return
 
-    if not can_add_request:
-        try:
-            warning_message = user_info.get_message_cannot_add_query(
-                trial_period_state
-            )
-        except user_info.UnexpectedTrialState:
-            logger.exception(f"Unexpected trial period for user {user_id}")
-            return
-
+    if not user.can_add_request:
         await message.answer(
-            warning_message,
+            user.reason_message,
             reply_markup=types.ReplyKeyboardRemove(),
         )
         return
@@ -101,8 +91,6 @@ async def new_query(message: types.Message, state: FSMContext):
 
 
 async def process_search_string(message: types.Message, state: FSMContext):
-    logger.debug(f"state: {state}")
-
     search_string = await _search_string_filter(message.text)
 
     await state.update_data(search_string=search_string)
@@ -205,13 +193,12 @@ async def process_max_price(message: types.Message, state: FSMContext):
         "max_price": data["max_price"],
     }
 
-    user = db.get_user_by_user_id(user_id=user_id)
+    user = user_info.UserInfo(user_id)
     now = datetime.datetime.now().replace(microsecond=0)
-    trial_period_state = user_info.get_trial_period_state(user=user, date=now)
 
     # пробный период не начался
     # добавляем дату окончания пробного периода
-    if trial_period_state == models.TrialPeriodState.HAS_NOT_STARTED:
+    if user.trial_state == models.TrialPeriodState.HAS_NOT_STARTED:
         last_sub_day = now + datetime.timedelta(days=consts.TRIAL_PERIOD_DAYS)
 
         user_data_update = {
@@ -226,9 +213,8 @@ async def process_max_price(message: types.Message, state: FSMContext):
         )
 
     # сейчас пробный период
-    # дата окончания подписки - дата окончания пробного периода
-    if trial_period_state == models.TrialPeriodState.TRIAL_PERIOD:
-        last_sub_day = user.subscription_last_day
+    if user.trial_state == models.TrialPeriodState.TRIAL_PERIOD:
+        last_sub_day = user.user.subscription_last_day
         additional_message = messages.trial_last_day_msg_formation(
             last_sub_day
         )
