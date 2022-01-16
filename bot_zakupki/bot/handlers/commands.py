@@ -12,6 +12,8 @@ CANCEL = "cancel"
 UPDATE_SUBSCRIPTION = "update_subscription"
 UPDATE_SUBSCRIPTION_DESCRIPTION = "Управление подпиской"
 
+BUY = "buy"
+
 
 # Query commands
 ADD_NEW_QUERY = "add_new_query"
