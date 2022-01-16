@@ -18,6 +18,7 @@ USER_BOT_START_DATE = "bot_start_date"
 USER_BOT_IS_ACTIVE = "bot_is_active"
 USER_SUBSCRIPTION_LAST_DAY = "subscription_last_day"
 USER_PAYMENT_LAST_DAY = "payment_last_day"
+USER_MAX_NUMBER_OF_QUERIES = "max_number_of_queries"
 
 
 # ===============Common===============

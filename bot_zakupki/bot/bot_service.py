@@ -12,6 +12,7 @@ from bot_zakupki.bot.handlers import change_query_handlers
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import common_handlers
 from bot_zakupki.bot.handlers import search_query_handlers
+from bot_zakupki.bot.handlers import subscription_handlers
 from bot_zakupki.common import consts
 
 
@@ -39,6 +40,7 @@ class BotService:
         common_handlers.register_handlers_common(self.dp)
         search_query_handlers.register_handlers_search_query(self.dp)
         change_query_handlers.register_change_search_query(self.dp)
+        subscription_handlers.register_handlers_subscription(self.dp)
 
     def _middleware_setup(self):
         self.dp.middleware.setup(

@@ -5,6 +5,7 @@ from typing import Optional
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.common import consts
 from bot_zakupki.common import dates
+from bot_zakupki.common import db
 from bot_zakupki.common import models
 from bot_zakupki.common import utils
 
@@ -222,3 +223,49 @@ def all_queries_messages_formation(
 
 def command_log_formation(command: str, user_id: int):
     return f"Command `{command}` was used by user {user_id}"
+
+
+# ==========SUBSCRIPTION==========
+
+
+def subscription_message_formation(user_id: str):
+    now = dates.get_current_time_for_db()
+
+    user = db.get_user_by_user_id(user_id=user_id)
+    subscription_last_day = user.subscription_last_day if user else None
+    max_number_of_queries = user.max_number_of_queries if user else None
+
+    if subscription_last_day is None or subscription_last_day < now:
+        subscription_msg = "🗓️ Подписка неактивна"
+    else:
+        postfix = "запрос"
+        if max_number_of_queries == 5:
+            postfix = "запросов"
+        subscription_msg = (
+            f"🗓️ Текущая подписка: активна до "
+            f"{dates.format_date_for_msg(subscription_last_day)}"
+            f" - {max_number_of_queries} {postfix}"
+        )
+
+    return subscription_msg
+
+
+def after_subscription_message_formation(user_id: str):
+    user = db.get_user_by_user_id(user_id=user_id)
+    subscription_last_day = user.subscription_last_day if user else None
+    max_number_of_queries = user.max_number_of_queries if user else None
+
+    if subscription_last_day is None or max_number_of_queries is None:
+        raise
+
+    postfix = "запрос"
+    if max_number_of_queries == 5:
+        postfix = "запросов"
+
+    subscription_msg = (
+        f"🗓️ Текущая подписка: активна до "
+        f"{dates.format_date_for_msg(subscription_last_day)}"
+        f" - {max_number_of_queries} {postfix}"
+    )
+
+    return subscription_msg
