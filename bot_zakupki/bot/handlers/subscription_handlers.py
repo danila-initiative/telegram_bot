@@ -29,14 +29,6 @@ prices = {
     },
 }
 
-table = """
-| Tables   |      Are      |  Cool |
-|----------|:-------------:|------:|
-| col 1 is |  left-aligned | $1600 |
-| col 2 is |    centered   |   $12 |
-| col 3 is | right-aligned |    $1 |
-"""
-
 
 def get_price(
     days_number: str, queries_number: str
@@ -94,7 +86,7 @@ async def cmd_update_subscription(message: types.Message, state: FSMContext):
 
     media = types.MediaGroup()
     media.attach_photo(
-        types.InputFile("/app/bot_zakupki/static/table_2.png"),
+        types.InputFile("/app/bot_zakupki/static/price.png"),
     )
 
     await message.answer(answer)
