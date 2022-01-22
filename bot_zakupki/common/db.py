@@ -10,6 +10,7 @@ from typing import Optional
 from loguru import logger
 
 from bot_zakupki.common import consts
+from bot_zakupki.common import dates
 from bot_zakupki.common import models
 
 USER_USER_ID = "user_id"
@@ -141,10 +142,13 @@ def imitate_trial_period_end(
     user_id: str,
 ):
     db_service: DBService = get_connection_cursor()
-    date = datetime.datetime.now().replace(microsecond=0)
-    logger.debug(f"New trial end date: {date}")
+    date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(
+        days=1
+    )
+    logger.debug(f"New {USER_SUBSCRIPTION_LAST_DAY}: {date}")
     db_service.cursor.execute(
-        f"UPDATE user SET trial_end_date = ? WHERE user_id = {user_id}",
+        f"UPDATE user SET {USER_SUBSCRIPTION_LAST_DAY} = ? "
+        f"WHERE {USER_USER_ID} = {user_id}",
         (date,),
     )
     db_service.connection.commit()
@@ -184,15 +188,39 @@ def update_search_query(
     db_service.connection.commit()
 
 
-def get_all_search_queries() -> List[models.SearchQuery]:
+def get_all_active_search_queries() -> List[models.SearchQuery]:
     db_service: DBService = get_connection_cursor()
-    sql = "SELECT * FROM search_query"
-    db_service.cursor.execute(sql)
+    date = dates.get_current_time_for_db()
+    sql = """
+        SELECT user.max_number_of_queries, search_query.*
+        FROM user
+        INNER JOIN search_query
+        ON user.user_id = search_query.user_id
+        WHERE user.subscription_last_day >= ?
+        ORDER BY search_query.user_id, search_query.created_at
+    """
+    db_service.cursor.execute(sql, (date,))
     rows = db_service.cursor.fetchall()
+
+    current_user_id = ""
+    current_query_number = 1
+
+    result = []
+
+    for row in rows:
+        max_number = row[0]
+        query = models.SearchQuery(*row[1:])
+        if query.user_id != current_user_id:
+            current_user_id = query.user_id
+            current_query_number = 1
+        if current_query_number <= max_number:
+            result.append(query)
+
+        current_query_number += 1
 
     db_service.connection.commit()
 
-    return [models.SearchQuery(*row) for row in rows]
+    return result
 
 
 def get_all_search_queries_by_user_id(
@@ -211,6 +239,17 @@ def get_all_search_queries_by_user_id(
 
     db_service.connection.commit()
     db_service.connection.close()
+
+    return [models.SearchQuery(*row) for row in rows]
+
+
+def get_all_search_queries() -> List[models.SearchQuery]:
+    db_service: DBService = get_connection_cursor()
+    sql = "SELECT * FROM search_query"
+    db_service.cursor.execute(sql)
+    rows = db_service.cursor.fetchall()
+
+    db_service.connection.commit()
 
     return [models.SearchQuery(*row) for row in rows]
 

@@ -13,6 +13,7 @@ from bot_zakupki.bot.handlers import change_query_handlers as cqh
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
 from bot_zakupki.common import consts
+from bot_zakupki.common import dates
 from bot_zakupki.common import db
 from bot_zakupki.common import models
 from bot_zakupki.common import user_info
@@ -104,6 +105,9 @@ async def process_search_string(message: types.Message, state: FSMContext):
 
 
 async def _search_string_filter(text: str) -> str:
+    if text == messages.I_M_FEELING_LUCKY:
+        return text
+
     search_string: str = ""
 
     for character in text:
@@ -194,7 +198,7 @@ async def process_max_price(message: types.Message, state: FSMContext):
     }
 
     user = user_info.UserInfo(user_id)
-    now = datetime.datetime.now().replace(microsecond=0)
+    now = dates.get_current_time_for_db()
 
     # пробный период не начался
     # добавляем дату окончания пробного периода
@@ -203,6 +207,7 @@ async def process_max_price(message: types.Message, state: FSMContext):
 
         user_data_update = {
             db.USER_SUBSCRIPTION_LAST_DAY: last_sub_day,
+            db.USER_MAX_NUMBER_OF_QUERIES: consts.MAX_QUERIES_IN_TRIAL_PERIOD,
         }
         db.update_user_by_user_id(
             user_id=user_id, column_values=user_data_update

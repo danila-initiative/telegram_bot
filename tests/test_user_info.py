@@ -22,4 +22,3 @@ def test_can_add_request(fill_user_db):
 
 def test_get_message_cannot_add_query():
     pass
-
