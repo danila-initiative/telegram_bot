@@ -6,8 +6,6 @@ from bot_zakupki.common import consts
 from bot_zakupki.common import dates
 from bot_zakupki.common import db
 
-EXPECTED_ACTIVE_SEARCH_QUERIES = "expected_active_search_queries.json"
-
 
 @pytest.mark.parametrize(
     "user_ids,number_of_queries,max_num_of_queries,days_delta,"

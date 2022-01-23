@@ -1,6 +1,4 @@
 # type: ignore
-import asyncio
-
 from aiogram import Dispatcher
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -89,7 +87,6 @@ async def cmd_show_all_my_queries(message: types.Message, state: FSMContext):
 async def cmd_show_all_my_queries_func(
     message: types.Message,
 ) -> tuple[str, types.ReplyKeyboardRemove]:
-    await asyncio.sleep(5)
     user_id = message.from_user.id
     queries = db.get_all_search_queries_by_user_id(user_id)
 
