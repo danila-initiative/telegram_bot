@@ -28,6 +28,15 @@ def format_date_for_request(date: datetime.datetime) -> str:
     return date.date().strftime("%d.%m.%Y")
 
 
+def get_date_for_request(days_delta: int) -> str:
+    # example: 04.11.2021
+
+    now = get_current_time_for_db()
+    publish_date = now + datetime.timedelta(days=days_delta)
+
+    return format_date_for_request(publish_date)
+
+
 def format_date_for_msg(date: datetime.datetime) -> str:
     # example: 04.11.2021
 

@@ -18,12 +18,14 @@ def extra_logging():
     logger.remove()
     if consts.DEBUG:
         logger.add(
-            f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="DEBUG"
+            f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log",
+            level="DEBUG",
         )
         logger.add(sys.stdout, level="DEBUG")
     else:
         logger.add(
-            f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="INFO"
+            f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log",
+            level="INFO",
         )
         logger.add(sys.stdout, level="INFO")
 

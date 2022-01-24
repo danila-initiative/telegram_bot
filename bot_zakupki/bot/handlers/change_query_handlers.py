@@ -73,7 +73,10 @@ async def cmd_choose_query_to_change(
         queries=queries, subscription_last_day=user.subscription_last_day
     )
     answer += "\n"
-    answer += messages.WHICH_QUERY_CHANGE
+    if message.text == "/delete_query":
+        answer += messages.WHICH_QUERY_DELETE
+    else:
+        answer += messages.WHICH_QUERY_CHANGE
 
     # Формирование клавиатуры для этих запросов
     prefix = "change_query"
@@ -104,8 +107,12 @@ async def callback_change_query(call: types.CallbackQuery):
     number = call.data.split("_")[-1]
     user_data[user_id] = (number, queries[int(number) - 1].unique_id)
 
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(messages.I_M_FEELING_LUCKY)
+
     await call.message.answer(
         f"Введите новую ключевую строку для запроса {number}: ",
+        reply_markup=keyboard,
     )
 
 

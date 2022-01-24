@@ -27,5 +27,7 @@ from bot_zakupki.bot.handlers import search_query_handlers
 async def test_search_string_filter(
     setup_db, get_message, input_string, expected_output
 ):
-    search_string = await search_query_handlers._search_string_filter(input_string)
+    search_string = await search_query_handlers._search_string_filter(
+        input_string
+    )
     assert search_string == expected_output

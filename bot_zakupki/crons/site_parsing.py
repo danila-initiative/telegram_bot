@@ -1,4 +1,3 @@
-import datetime
 import random
 import time
 
@@ -13,15 +12,12 @@ from bot_zakupki.common import parser
 
 def start_parsing():
     logger.info(f"Cron task {__file__} launched.")
-    # Получаем список всех активных запросов из базы
-    now = datetime.datetime.now().replace(microsecond=0)
-    # TODO: переписать этот запрос
-    # Взять людей с активной подпиской и для них выбрать запросы
-    # в соответствии с подпиской (1, 3 или 5 запросов)
-    active_queries = db.get_all_search_queries()
+    # TODO: Добавить проверку доступности сайта
 
-    publish_date = now + datetime.timedelta(days=consts.PUBLISH_DELTA)
-    publish_date = dates.format_date_for_request(publish_date)
+    # Получаем список всех активных запросов из базы
+    active_queries = db.get_all_active_search_queries()
+
+    publish_date = dates.get_date_for_request(days_delta=consts.PUBLISH_DELTA)
 
     # {query_id: List[Results]}
     results = {}

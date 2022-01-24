@@ -104,9 +104,7 @@ def test_insert_new_search_query(setup_db):
         "max_price": 100000,
     }
 
-    db.insert_new_search_query(
-        column_values=data
-    )
+    db.insert_new_search_query(column_values=data)
     res_after = db.get_all_search_queries()
 
     now = datetime.datetime.now().replace(microsecond=0)

@@ -1,5 +1,6 @@
 # type: ignore
 import sqlite3
+import typing
 from dataclasses import dataclass
 
 from aiogram import Bot
@@ -23,7 +24,9 @@ class DBService:
 
 @dataclass
 class BotService:
-    def __init__(self, api_token: str, admins_ids: list[str]):
+    def __init__(
+        self, api_token: str, admins_ids: typing.Optional[list[str]] = None
+    ):
         self.api_token: str = api_token
         self.admins_ids: list[str] = admins_ids
         self.storage = MemoryStorage()
@@ -43,9 +46,10 @@ class BotService:
         subscription_handlers.register_handlers_subscription(self.dp)
 
     def _middleware_setup(self):
-        self.dp.middleware.setup(
-            middlewares.AccessMiddleware([int(i) for i in self.admins_ids])
-        )
+        if self.admins_ids is not None:
+            self.dp.middleware.setup(
+                middlewares.AccessMiddleware([int(i) for i in self.admins_ids])
+            )
 
     async def _set_commands(self):
         commands_to_set = [
