@@ -170,7 +170,7 @@ class RequestParameters:
 
     def to_list(self) -> list:
         return [
-            ("searchString", prepare_search_string(self.search_string)),
+            ("searchString", self.prepare_search_string(self.search_string)),
             ("priceFromGeneral", str(self.min_price)),
             ("priceToGeneral", str(self.max_price)),
             ("customerPlace", CUSTOMER_PLACES.get(self.place_name)),
@@ -180,9 +180,9 @@ class RequestParameters:
             ("applSubmissionCloseDateTo", self.close_date_to),
         ]
 
+    @staticmethod
+    def prepare_search_string(raw_string: str) -> str:
+        search_list = raw_string.split()
+        search_string = "+".join(search_list)
 
-def prepare_search_string(raw_string: str) -> str:
-    search_list = raw_string.split()
-    search_string = "+".join(search_list)
-
-    return search_string
+        return search_string

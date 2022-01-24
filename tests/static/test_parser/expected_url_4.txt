@@ -1,0 +1,1 @@
+https://zakupki.gov.ru/epz/order/extendedsearch/results.html?morphology=on&search-filter=Дате+размещения&pageNumber=1&sortDirection=false&recordsPerPage=_50&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&fz223=on&ppRf615=on&af=on&currencyIdGeneral=-1&priceFromGeneral=10000&priceToGeneral=20000000&customerPlace=5277335&publishDateFrom=01.09.2021

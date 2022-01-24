@@ -8,6 +8,7 @@ from loguru import logger
 # from pandas.core.frame import DataFrame
 from requests import Response
 
+from bot_zakupki.bot.handlers import messages
 from bot_zakupki.common import consts
 from bot_zakupki.common import dates
 from bot_zakupki.common import models
@@ -31,6 +32,12 @@ def request_formation(custom_params: models.RequestParameters) -> str:
     ]
 
     custom_params = custom_params.to_list()
+
+    if custom_params[0][1] == models.RequestParameters.prepare_search_string(
+        messages.I_M_FEELING_LUCKY
+    ):
+        custom_params = custom_params[1:]
+
     filtered_custom_param = []
     for param in custom_params:
         if param[1] is not None:

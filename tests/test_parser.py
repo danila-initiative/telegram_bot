@@ -80,6 +80,18 @@ def test_parser_page(expected_result):
             None,
             id="3",
         ),
+        pytest.param(
+            "tests/static/test_parser/expected_url_4.txt",
+            "Мне повезёт",
+            10000,
+            20000000,
+            "Москва",
+            "01.09.2021",
+            None,
+            None,
+            None,
+            id="4",
+        ),
     ),
 )
 def test_request_formation(

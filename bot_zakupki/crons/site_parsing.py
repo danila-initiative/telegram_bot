@@ -12,6 +12,8 @@ from bot_zakupki.common import parser
 
 def start_parsing():
     logger.info(f"Cron task {__file__} launched.")
+    # TODO: Добавить проверку доступности сайта
+
     # Получаем список всех активных запросов из базы
     active_queries = db.get_all_active_search_queries()
 
