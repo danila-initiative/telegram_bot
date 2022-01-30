@@ -38,7 +38,7 @@ def get_connection_cursor(
     logger.debug(f"path to db: {path_to_db}")
     connection = sqlite3.connect(path_to_db)
     cursor = connection.cursor()
-    logger.info("Connection and Cursor to SQLite DB successful")
+    logger.debug("Connection and Cursor to SQLite DB successful")
 
     return DBService(connection=connection, cursor=cursor)
 
@@ -275,6 +275,7 @@ def insert_results(
     column_values: Dict[int, List[models.Result]],
 ):
     db_service: DBService = get_connection_cursor()
+
     columns = models.Result.get_result_columns_name()
     placeholders = ", ".join("?" * len(columns))
 
@@ -283,7 +284,7 @@ def insert_results(
         if not result:
             continue
         tmp = [(*astuple(res), query_id) for res in result]
-        values.append(*tmp)
+        values.extend(tmp)
 
     db_service.cursor.executemany(
         f"INSERT INTO result" f"{columns} " f"VALUES ({placeholders})",
@@ -299,7 +300,7 @@ def get_all_results():
     db_service.cursor.execute(sql)
     rows = db_service.cursor.fetchall()
 
-    return [models.Result(*row) for row in rows]
+    return [models.ResultDB(*row) for row in rows]
 
 
 if __name__ == "__main__":

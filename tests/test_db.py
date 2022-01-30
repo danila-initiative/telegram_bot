@@ -1,5 +1,6 @@
 import datetime
 
+from bot_zakupki.common import dates
 from bot_zakupki.common import db
 from bot_zakupki.common import models
 
@@ -123,49 +124,61 @@ def test_insert_new_search_query(setup_db):
     assert res_after == [expected_result]
 
 
-# def test_insert_get_all_results(setup_db):
-#     rows = db.get_all_results()
-#     assert len(rows) == 0
-#
-#     date = dates.res_date_to_datetime("03.07.2021")
-#
-#     result = models.Result(
-#         search_string="string 1",
-#         number_of_purchase="12345678994",
-#         publish_date=date,
-#         finish_date=date,
-#         price=1274812,
-#         subject_of_purchase="subject",
-#         link="http://dsdgsdgsdgsd.com",
-#         customer="customer 1",
-#     )
-#
-#     db.insert_results({124124: [result], 235423: [result]})
-#     rows = db.get_all_results()
-#
-#     expected_results = [
-#         models.Result(
-#             search_string="string 1",
-#             publish_date=datetime.datetime(2021, 7, 3, 0, 0),
-#             finish_date=datetime.datetime(2021, 7, 3, 0, 0),
-#             number_of_purchase="12345678994",
-#             subject_of_purchase="subject",
-#             price=1274812,
-#             link="http://dsdgsdgsdgsd.com",
-#             customer="customer 1",
-#             location=None,
-#         ),
-#         models.Result(
-#             search_string="string 1",
-#             publish_date=datetime.datetime(2021, 7, 3, 0, 0),
-#             finish_date=datetime.datetime(2021, 7, 3, 0, 0),
-#             number_of_purchase="12345678994",
-#             subject_of_purchase="subject",
-#             price=1274812,
-#             link="http://dsdgsdgsdgsd.com",
-#             customer="customer 1",
-#             location=None,
-#         ),
-#     ]
-#
-#     assert rows == expected_results
+def test_insert_get_all_results(setup_db):
+    rows = db.get_all_results()
+    assert len(rows) == 0
+
+    date = dates.res_date_to_datetime("03.07.2021")
+
+    result_2 = {
+        1: [
+            models.Result(
+                publish_date=datetime.datetime(2022, 1, 28, 0, 0),
+                finish_date=datetime.datetime(2022, 2, 4, 0, 0),
+                number_of_purchase="№ 0348100089422000001",
+                subject_of_purchase="Оказание услуг по очистке скатной",
+                price=269694,
+                link="https://zakupki.gov.ru/epz/order/notice/zk20",
+                customer="ГОСУДАРСТВЕННОЕ УЧРЕЖДЕНИЕ",
+            ),
+            models.Result(
+                publish_date=datetime.datetime(2022, 1, 28, 0, 0),
+                finish_date=datetime.datetime(2022, 2, 4, 0, 0),
+                number_of_purchase="№ 0348100089422000001",
+                subject_of_purchase="Оказание услуг по очистке скатной",
+                price=269694,
+                link="https://zakupki.gov.ru/epz/order/notice/zk20",
+                customer="ГОСУДАРСТВЕННОЕ УЧРЕЖДЕНИЕ",
+            ),
+        ]
+    }
+
+    db.insert_results(result_2)
+    rows = db.get_all_results()
+
+    expected_results = [
+        models.ResultDB(
+            unique_id=1,
+            publish_date=datetime.datetime(2022, 1, 28, 0, 0),
+            finish_date=datetime.datetime(2022, 2, 4, 0, 0),
+            number_of_purchase="№ 0348100089422000001",
+            subject_of_purchase="Оказание услуг по очистке скатной",
+            price=269694,
+            link="https://zakupki.gov.ru/epz/order/notice/zk20",
+            customer="ГОСУДАРСТВЕННОЕ УЧРЕЖДЕНИЕ",
+            query_id=1,
+        ),
+        models.ResultDB(
+            unique_id=2,
+            publish_date=datetime.datetime(2022, 1, 28, 0, 0),
+            finish_date=datetime.datetime(2022, 2, 4, 0, 0),
+            number_of_purchase="№ 0348100089422000001",
+            subject_of_purchase="Оказание услуг по очистке скатной",
+            price=269694,
+            link="https://zakupki.gov.ru/epz/order/notice/zk20",
+            customer="ГОСУДАРСТВЕННОЕ УЧРЕЖДЕНИЕ",
+            query_id=1,
+        ),
+    ]
+
+    assert rows == expected_results

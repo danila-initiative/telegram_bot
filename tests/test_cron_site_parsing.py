@@ -8,8 +8,7 @@ from bot_zakupki.common import db
 
 
 @pytest.mark.parametrize(
-    "user_ids,number_of_queries,max_num_of_queries,days_delta,"
-    "expected_len",
+    "user_ids,number_of_queries,max_num_of_queries,days_delta," "expected_len",
     (
         pytest.param(["111"], 0, 0, consts.TRIAL_PERIOD_DAYS, 0, id="1"),
         pytest.param(["222"], 1, 3, consts.TRIAL_PERIOD_DAYS, 1, id="2"),
@@ -19,11 +18,15 @@ from bot_zakupki.common import db
         pytest.param(["666", "77"], 5, 1, 30, 2, id="6"),
         pytest.param(["777"], 5, 5, 30, 5, id="7"),
         pytest.param(["888"], 5, 5, -1, 0, id="8"),
-    )
+    ),
 )
 def test_get_all_active_search_queries(
-    setup_db, user_ids, number_of_queries, max_num_of_queries, days_delta,
-    expected_len
+    setup_db,
+    user_ids,
+    number_of_queries,
+    max_num_of_queries,
+    days_delta,
+    expected_len,
 ):
     # 1. Пользователь только зарегался - 0 запросов
     # 2. Пользователь на пробном периоде - 1 запрос
@@ -54,7 +57,7 @@ def _set_db_according_data(
             "search_string": "search_string",
             "location": "location",
             "min_price": 0,
-            "max_price": 100
+            "max_price": 100,
         }
         for i in reversed(range(number_of_queries)):
             delta = i if i % 2 == 1 else -i
@@ -67,8 +70,9 @@ def _set_db_according_data(
             db.USER_SUBSCRIPTION_LAST_DAY: last_sub_day,
             db.USER_MAX_NUMBER_OF_QUERIES: max_num_of_queries,
         }
-        db.update_user_by_user_id(user_id=user_id,
-                                  column_values=user_data_update)
+        db.update_user_by_user_id(
+            user_id=user_id, column_values=user_data_update
+        )
 
 
 def test_site_parsing(setup_db):

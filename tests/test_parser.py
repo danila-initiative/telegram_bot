@@ -10,11 +10,10 @@ from bot_zakupki.common import parser
 # TODO: Дописать параметризованную проверку результатов
 # TODO: добавить тест с пустой страницей выдачи
 @pytest.mark.parametrize(
-    "expected_result,",
+    "expected_result,id_name",
     (
         pytest.param(
             models.Result(
-                search_string="лифт",
                 number_of_purchase="№ 0373200041521001009",
                 publish_date=datetime.datetime.strptime(
                     "07.09.2021", "%d.%m.%Y"
@@ -27,17 +26,36 @@ from bot_zakupki.common import parser
                 link="https://zakupki.gov.ru/epz/order/notice/ea44/view/common-info.html?regNumber=0373200041521001009",
                 customer='ГОСУДАРСТВЕННОЕ КАЗЕННОЕ УЧРЕЖДЕНИЕ ГОРОДА МОСКВЫ "ДИРЕКЦИЯ ПО ОБЕСПЕЧЕНИЮ ДЕЯТЕЛЬНОСТИ ОРГАНИЗАЦИЙ ТРУДА И СОЦИАЛЬНОЙ ЗАЩИТЫ НАСЕЛЕНИЯ ГОРОДА МОСКВЫ"',
             ),
-            id="0",
+            "1",
+            id="1",
         ),
+        pytest.param(
+            None,
+            "2",
+            id="2",
+        ),
+        pytest.param(
+            None,
+            "3",
+            id="3",
+        ),
+
     ),
 )
-def test_parser_page(expected_result):
-    page = open("tests/static/test_parser/results.html", "r", encoding="utf-8")
+def test_parser_page(expected_result, id_name):
+    page = open(
+        f"tests/static/test_parser/results_{id_name}.html",
+        "r",
+        encoding="utf-8",
+    )
     response = Response()
     response._content = str(page.read())
+
     results = parser.parse_result_page(response, "лифт")
-    print(results[0])
-    assert results[0] == expected_result
+    if results is not None:
+        assert results[0] == expected_result
+    else:
+        assert results == expected_result
 
 
 @pytest.mark.parametrize(

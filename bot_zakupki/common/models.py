@@ -5,6 +5,15 @@ from enum import Enum
 
 from bot_zakupki.common import dates
 
+RESULT_PUBLISH_DATE = "publish_date"
+RESULT_FINISH_DATE = "finish_date"
+RESULT_NUMBER_OF_PURCHASE = "number_of_purchase"
+RESULT_SUBJECT_OF_PURCHASE = "subject_of_purchase"
+RESULT_PRICE = "price"
+RESULT_LINK = "link"
+RESULT_CUSTOMER = "customer"
+RESULT_QUERY_ID = "query_id"
+
 
 class Region:
     MOSCOW = "Москва"
@@ -117,44 +126,69 @@ class MaxPriceValidation(str, Enum):
     VALID = "valid"
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass()
 class Result:
-    search_string: str
-    number_of_purchase: str
     publish_date: datetime.datetime
     finish_date: datetime.datetime
-    price: int
+    number_of_purchase: str
     subject_of_purchase: str
+    price: int
     link: str
     customer: str
-    location: typing.Union[str, None] = None
-
-    def to_tuple(self):
-        return (
-            self.search_string,
-            self.number_of_purchase,
-            self.publish_date,
-            self.finish_date,
-            self.price,
-            self.subject_of_purchase,
-            self.link,
-            self.customer,
-            self.location,
-        )
 
     @staticmethod
     def get_result_columns_name() -> tuple:
         return (
-            "search_string",
-            "number_of_purchase",
-            "publish_date",
-            "finish_date",
-            "price",
-            "subject_of_purchase",
-            "link",
-            "customer",
-            "location",
+            RESULT_PUBLISH_DATE,
+            RESULT_FINISH_DATE,
+            RESULT_NUMBER_OF_PURCHASE,
+            RESULT_SUBJECT_OF_PURCHASE,
+            RESULT_PRICE,
+            RESULT_LINK,
+            RESULT_CUSTOMER,
+            RESULT_QUERY_ID,
         )
+
+
+@dataclasses.dataclass()
+class ResultDB:
+    unique_id: int
+    query_id: int
+    publish_date: datetime.datetime
+    finish_date: datetime.datetime
+    number_of_purchase: str
+    subject_of_purchase: str
+    price: int
+    link: str
+    customer: typing.Optional[str]
+
+    def __init__(
+        self,
+        unique_id: int,
+        publish_date: typing.Union[str, datetime.datetime],
+        finish_date: typing.Union[str, datetime.datetime],
+        number_of_purchase: str,
+        subject_of_purchase: str,
+        price: int,
+        link: str,
+        customer: str,
+        query_id: int,
+    ):
+        self.unique_id = unique_id
+        if type(publish_date) == str:
+            self.publish_date = dates.sqlite_date_to_datetime(publish_date)
+        elif type(publish_date) == datetime.datetime:
+            self.publish_date = publish_date
+        if type(finish_date) == str:
+            self.finish_date = dates.sqlite_date_to_datetime(finish_date)
+        elif type(finish_date) == datetime.datetime:
+            self.finish_date = finish_date
+        self.number_of_purchase = number_of_purchase
+        self.subject_of_purchase = subject_of_purchase
+        self.price = price
+        self.link = link
+        self.customer = customer
+        self.query_id = query_id
 
 
 @dataclasses.dataclass()
