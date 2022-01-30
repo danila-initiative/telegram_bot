@@ -14,7 +14,7 @@ check-pep8:
 	flake8 bot_zakupki & mypy bot_zakupki
 
 smart-format:
-	black --line-length 79  bot_zakupki
+	black --line-length 79  bot_zakupki tests
 
 test:
 	bash /app/runtests.sh

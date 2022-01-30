@@ -14,6 +14,10 @@ from bot_zakupki.common import dates
 from bot_zakupki.common import models
 
 
+class SiteUnavailable(Exception):
+    pass
+
+
 @logger.catch
 def request_formation(custom_params: models.RequestParameters) -> str:
     basic_params = [
@@ -65,7 +69,18 @@ def parse_result_page(
     soup = BS(page.content, "html.parser")
 
     number_of_records = soup.find("div", class_="search-results__total")
+
+    if number_of_records is None:
+        return
+
     number_of_records = number_of_records.text.strip().split(" ")[0]
+
+    number_tmp = ""
+    for i in number_of_records:
+        if i.isnumeric():
+            number_tmp += i
+
+    number_of_records = int(number_tmp)
 
     if number_of_records == 0:
         return
@@ -132,12 +147,11 @@ def parse_result_page(
 
         results.append(
             models.Result(
-                search_string=search_string,
-                number_of_purchase=number_of_purchase,
                 publish_date=dates.res_date_to_datetime(publish_date),
                 finish_date=dates.res_date_to_datetime(finish_date),
-                price=int(new_price),
+                number_of_purchase=number_of_purchase,
                 subject_of_purchase=subject_of_purchase,
+                price=int(new_price),
                 link=link,
                 customer=customer,
             )
