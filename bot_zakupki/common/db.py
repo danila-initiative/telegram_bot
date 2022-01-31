@@ -238,7 +238,6 @@ def get_all_search_queries_by_user_id(
     rows = db_service.cursor.fetchall()
 
     db_service.connection.commit()
-    db_service.connection.close()
 
     return [models.SearchQuery(*row) for row in rows]
 

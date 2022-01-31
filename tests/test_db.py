@@ -118,6 +118,7 @@ def test_insert_new_search_query(setup_db):
         min_price=0,
         max_price=100000,
         created_at=now,
+        last_updated_at=now,
     )
 
     assert res_before == []

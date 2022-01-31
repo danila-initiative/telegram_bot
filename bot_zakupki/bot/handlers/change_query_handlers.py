@@ -8,6 +8,7 @@ from aiogram.dispatcher.filters.state import StatesGroup
 
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
+from bot_zakupki.common import dates
 from bot_zakupki.common import db
 from bot_zakupki.common import models
 from bot_zakupki.common import utils
@@ -157,6 +158,7 @@ async def process_change_max_price(message: types.Message, state: FSMContext):
         "location": data["location"],
         "min_price": data["min_price"],
         "max_price": data["max_price"],
+        "last_updated_at": dates.get_current_time_for_db(),
     }
 
     db.update_search_query(query_id=query_id, column_values=query)
