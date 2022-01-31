@@ -6,5 +6,6 @@ CREATE TABLE if NOT EXISTS search_query(
     min_price INTEGER NULL,
     max_price INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT (datetime('now','localtime')),
+    last_updated_at TIMESTAMP DEFAULT (datetime('now','localtime')),
     FOREIGN KEY (user_id) REFERENCES user (user_id)
 );

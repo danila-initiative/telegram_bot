@@ -97,6 +97,7 @@ class SearchQuery:
     min_price: int
     max_price: int
     created_at: datetime.datetime
+    last_updated_at: datetime.datetime
 
     def __init__(
         self,
@@ -107,6 +108,7 @@ class SearchQuery:
         min_price: int,
         max_price: int,
         created_at: typing.Union[str, datetime.datetime],
+        last_updated_at: typing.Union[str, datetime.datetime],
     ):
         self.unique_id = unique_id
         self.user_id = user_id
@@ -118,6 +120,12 @@ class SearchQuery:
             self.created_at = dates.sqlite_date_to_datetime(created_at)
         elif type(created_at) == datetime.datetime:
             self.created_at = created_at
+        if type(last_updated_at) == str:
+            self.last_updated_at = dates.sqlite_date_to_datetime(
+                last_updated_at
+            )
+        elif type(last_updated_at) == datetime.datetime:
+            self.last_updated_at = last_updated_at
 
 
 class MaxPriceValidation(str, Enum):
