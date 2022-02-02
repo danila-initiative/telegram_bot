@@ -157,7 +157,9 @@ async def checkout(pre_checkout_query: types.PreCheckoutQuery):
 
 # Если платеж прошел успешно
 async def got_payment(message: types.Message):
-    logger.info(f"transaction_id: {message.successful_payment.telegram_payment_charge_id}")
+    logger.info(
+        f"transaction_id: {message.successful_payment.telegram_payment_charge_id}"
+    )
     logger.info(f"successful_payment: {message.successful_payment}")
 
     payload = message.successful_payment.invoice_payload

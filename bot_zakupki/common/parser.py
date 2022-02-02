@@ -20,35 +20,39 @@ class SiteUnavailable(Exception):
 
 @logger.catch
 def request_formation(custom_params: models.RequestParameters) -> str:
-    basic_params = [
-        ("morphology", "on"),
-        ("search-filter", "Дате+размещения"),
-        ("pageNumber", "1"),
-        ("sortDirection", "false"),
-        ("recordsPerPage", "_50"),
-        ("showLotsInfoHidden", "false"),
-        ("sortBy", "UPDATE_DATE"),
-        ("fz44", "on"),
-        ("fz223", "on"),
-        ("ppRf615", "on"),
-        ("af", "on"),
-        ("currencyIdGeneral", "-1"),
-    ]
+    params = {
+        "morphology": "on",
+        "search-filter": "Дате+размещения",
+        "pageNumber": "1",
+        "sortDirection": "false",
+        "recordsPerPage": "_50",
+        "showLotsInfoHidden": "false",
+        "sortBy": "UPDATE_DATE",
+        "fz44": "on",
+        "fz223": "on",
+        "ppRf615": "on",
+        "af": "on",
+        "currencyIdGeneral": "-1",
+    }
 
-    custom_params = custom_params.to_list()
+    custom_params = custom_params.to_dict()
 
-    if custom_params[0][1] == models.RequestParameters.prepare_search_string(
+    if custom_params[
+        "searchString"
+    ] == models.RequestParameters.prepare_search_string(
         messages.I_M_FEELING_LUCKY
     ):
-        custom_params = custom_params[1:]
+        custom_params.pop("searchString")
+        params["recordsPerPage"] = "_20"
 
-    filtered_custom_param = []
-    for param in custom_params:
-        if param[1] is not None:
-            filtered_custom_param.append(param)
+    for key, value in custom_params.items():
+        if value is not None:
+            params[key] = value
 
-    parameters = basic_params + filtered_custom_param
-    params_combined = "&".join(map(lambda x: x[0] + "=" + x[1], parameters))
+    params_: list = []
+    for key, value in params.items():
+        params_.append(key + "=" + value)
+    params_combined = "&".join(params_)
 
     return consts.BASE_URL + params_combined
 
@@ -158,26 +162,3 @@ def parse_result_page(
         )
 
     return results
-
-
-# def SaveDfToExel(df: DataFrame, file_name: str):
-#     writer = pd.ExcelWriter(file_name, engine='xlsxwriter')
-#     df.to_excel(writer, index=False, sheet_name='Sheet1')
-#
-#     workbook = writer.book
-#     worksheet = writer.sheets['Sheet1']
-#     wrap_format = workbook.add_format({'text_wrap': True})
-#
-#     center_format = workbook.add_format(
-#         {'align': 'center', 'valign': 'vcenter'})
-#     v_center_format = workbook.add_format({'valign': 'vcenter'})
-#     link_format = workbook.add_format(
-#         {'font_color': 'blue', 'underline': True, 'valign': 'vcenter'})
-#
-#     worksheet.set_column('A:A', 25, v_center_format)
-#     worksheet.set_column('B:B', 50, wrap_format)
-#     worksheet.set_column('C:C', 25, center_format)
-#     worksheet.set_column('D:D', 30, center_format)
-#     worksheet.set_column('E:E', 100, link_format)
-#
-#     writer.save()

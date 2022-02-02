@@ -4,7 +4,6 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from loguru import logger
 
-from bot_zakupki.bot import common
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
 from bot_zakupki.common import consts
@@ -76,12 +75,7 @@ async def cmd_show_all_my_queries(message: types.Message, state: FSMContext):
     await state.finish()
     text, reply_markup = await cmd_show_all_my_queries_func(message)
 
-    await common.send_message(
-        message.bot,
-        user_id=message.from_user.id,
-        text=text,
-        reply_markup=reply_markup,
-    )
+    await message.answer(text=text, reply_markup=reply_markup)
 
 
 async def cmd_show_all_my_queries_func(

@@ -22,4 +22,6 @@ BASE_URL = "https://zakupki.gov.ru/epz/order/extendedsearch/results.html?"
 
 DEBUG = os.getenv("DEBUG")
 
-PRICE_TABLE = '/app/bot_zakupki/static/price.png'
+PRICE_TABLE = "/app/bot_zakupki/static/price.png"
+
+RESULTS_PATH = "/app/crons/results/"
