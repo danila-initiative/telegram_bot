@@ -6,6 +6,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types.message import ContentTypes
+from loguru import logger
 
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
@@ -113,6 +114,28 @@ async def callback_update_subscription(call: types.CallbackQuery):
         currency="RUB",
         prices=get_price(days, query_numbers),
         start_parameter="time-machine-example",
+        # provider_data={
+        #     "receipt": {
+        #         "customer": {
+        #             "full_name": "Иванов Иван Иванович",
+        #             "phone": "79000000000",
+        #             "email": "forspam@vivaldi.net",
+        #         },
+        #         "items": [
+        #             {
+        #                 "description": f"Подписка на {days} дней,
+        #                 {query_numbers} {postfix}",
+        #                 "quantity": "1.00",
+        #                 "amount": {
+        #                     "value": str(prices[days][query_numbers]//100),
+        #                     "currency": "RUB"
+        #                 },
+        #                 "vat_code": "2",
+        #                 "payment_mode": "full_prepayment",
+        #                 "payment_subject": "commodity"
+        #         }]
+        #     }
+        # }
     )
 
 
@@ -134,8 +157,9 @@ async def checkout(pre_checkout_query: types.PreCheckoutQuery):
 
 # Если платеж прошел успешно
 async def got_payment(message: types.Message):
-    # TODO: куда-то надо будет записывать транзакции
-    # transaction_id = message.successful_payment.telegram_payment_charge_id
+    logger.info(f"transaction_id: {message.successful_payment.telegram_payment_charge_id}")
+    logger.info(f"successful_payment: {message.successful_payment}")
+
     payload = message.successful_payment.invoice_payload
     payload = payload.split(",")
     days = payload[0]

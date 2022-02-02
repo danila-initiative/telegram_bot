@@ -21,3 +21,5 @@ PATH_TO_TEST_DB = "/app/tests/db/bot_test.sqlite"
 BASE_URL = "https://zakupki.gov.ru/epz/order/extendedsearch/results.html?"
 
 DEBUG = os.getenv("DEBUG")
+
+PRICE_TABLE = '/app/bot_zakupki/static/price.png'
