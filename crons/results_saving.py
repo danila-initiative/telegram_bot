@@ -24,13 +24,26 @@ def start_saving():
 
     df = utils.convert_results_to_df(results)
 
-    _create_folders_for_today_results(query_ids=df['query_id'].unique())
+    query_ids = df['query_id'].unique().tolist()
+
+    _create_folders_for_today_results(query_ids=query_ids)
+
+    query_ids_str = [str(id) for id in query_ids]
+
+    search_strings = db.get_search_query_search_string(", ".join(query_ids_str))
+
+    id_string_dict = {}
+    for string in search_strings:
+        id_string_dict[string[0]] = string[1]
 
     df1 = [x for _, x in df.groupby(df['query_id'])]
     for x in df1:
         common_part = f"{consts.RESULTS_PATH}/{dates.get_today_date()}/"
-        # TODO: сформировать имя файла: дата_количество закупок_ключевое слово
-        path = common_part + f"{x.iloc[0, 0]}" + "/1.xlsx"
+        path = common_part + \
+            f"{x.iloc[0, 0]}" + \
+            f"/{dates.format_date_date(now)}_" \
+            f"[{x.shape[0]}]_" \
+            f"{id_string_dict[x.iloc[0, 0]]}.xlsx"
         utils.save_df_to_excel(x.iloc[:, 1:], path)
 
 
