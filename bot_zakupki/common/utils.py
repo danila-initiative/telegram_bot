@@ -1,5 +1,7 @@
 import typing
 
+import pandas as pd
+
 from bot_zakupki.common import models
 
 
@@ -47,3 +49,45 @@ def delete_all_spaces(string: str) -> str:
 
 def delete_all_extra_spaces(string: str) -> str:
     return " ".join(string.split())
+
+
+def convert_results_to_df(
+    results: list[models.ResultDB],
+) -> pd.DataFrame:
+    data = [result.to_list_for_df() for result in results]
+    columns = [
+        "query_id",
+        "Номер закупки",
+        "Предмет закупки",
+        "Начальная цена",
+        "Дата окончания подачи заявок",
+        "Ссылка",
+    ]
+    df = pd.DataFrame(data, columns=columns)
+
+    return df
+
+
+def save_df_to_excel(df: pd.DataFrame, file_name: str):
+    writer = pd.ExcelWriter(file_name, engine="xlsxwriter")
+    df.to_excel(writer, index=False, sheet_name="Sheet1")
+
+    workbook = writer.book
+    worksheet = writer.sheets["Sheet1"]
+    wrap_format = workbook.add_format({"text_wrap": True})
+
+    center_format = workbook.add_format(
+        {"align": "center", "valign": "vcenter"}
+    )
+    v_center_format = workbook.add_format({"valign": "vcenter"})
+    link_format = workbook.add_format(
+        {"font_color": "blue", "underline": True, "valign": "vcenter"}
+    )
+
+    worksheet.set_column("A:A", 25, v_center_format)
+    worksheet.set_column("B:B", 50, wrap_format)
+    worksheet.set_column("C:C", 25, center_format)
+    worksheet.set_column("D:D", 30, center_format)
+    worksheet.set_column("E:E", 100, link_format)
+
+    writer.save()

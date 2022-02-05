@@ -136,8 +136,8 @@ class MaxPriceValidation(str, Enum):
 
 @dataclasses.dataclass()
 class Result:
-    publish_date: datetime.datetime
-    finish_date: datetime.datetime
+    publish_date: datetime.date
+    finish_date: datetime.date
     number_of_purchase: str
     subject_of_purchase: str
     price: int
@@ -162,8 +162,8 @@ class Result:
 class ResultDB:
     unique_id: int
     query_id: int
-    publish_date: datetime.datetime
-    finish_date: datetime.datetime
+    publish_date: datetime.date
+    finish_date: datetime.date
     number_of_purchase: str
     subject_of_purchase: str
     price: int
@@ -184,11 +184,11 @@ class ResultDB:
     ):
         self.unique_id = unique_id
         if type(publish_date) == str:
-            self.publish_date = dates.sqlite_date_to_datetime(publish_date)
+            self.publish_date = dates.sql_date_to_datetime_date(publish_date)
         elif type(publish_date) == datetime.datetime:
             self.publish_date = publish_date
         if type(finish_date) == str:
-            self.finish_date = dates.sqlite_date_to_datetime(finish_date)
+            self.finish_date = dates.sql_date_to_datetime_date(finish_date)
         elif type(finish_date) == datetime.datetime:
             self.finish_date = finish_date
         self.number_of_purchase = number_of_purchase
@@ -197,6 +197,16 @@ class ResultDB:
         self.link = link
         self.customer = customer
         self.query_id = query_id
+
+    def to_list_for_df(self) -> list:
+        return [
+            self.query_id,
+            self.number_of_purchase,
+            self.subject_of_purchase,
+            self.price,
+            dates.format_date_date(self.finish_date),
+            self.link,
+        ]
 
 
 @dataclasses.dataclass()
@@ -210,17 +220,17 @@ class RequestParameters:
     min_price: typing.Optional[int] = None  # 100000
     max_price: typing.Optional[int] = None  # 500000
 
-    def to_list(self) -> list:
-        return [
-            ("searchString", self.prepare_search_string(self.search_string)),
-            ("priceFromGeneral", str(self.min_price)),
-            ("priceToGeneral", str(self.max_price)),
-            ("customerPlace", CUSTOMER_PLACES.get(self.place_name)),
-            ("publishDateFrom", self.publish_date_from),
-            ("publishDateTo", self.publish_date_to),
-            ("applSubmissionCloseDateFrom", self.close_date_from),
-            ("applSubmissionCloseDateTo", self.close_date_to),
-        ]
+    def to_dict(self) -> dict:
+        return {
+            "searchString": self.prepare_search_string(self.search_string),
+            "priceFromGeneral": str(self.min_price),
+            "priceToGeneral": str(self.max_price),
+            "customerPlace": CUSTOMER_PLACES.get(self.place_name),
+            "publishDateFrom": self.publish_date_from,
+            "publishDateTo": self.publish_date_to,
+            "applSubmissionCloseDateFrom": self.close_date_from,
+            "applSubmissionCloseDateTo": self.close_date_to,
+        }
 
     @staticmethod
     def prepare_search_string(raw_string: str) -> str:

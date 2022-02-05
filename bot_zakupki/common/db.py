@@ -119,6 +119,9 @@ def get_user_by_user_id(
 
     db_service.cursor.execute(sql, (user_id,))
     row = db_service.cursor.fetchone()
+
+    db_service.connection.commit()
+
     if row is not None:
         user = models.User(*row)
         return user
@@ -131,6 +134,9 @@ def get_all_users() -> Optional[List[models.User]]:
     sql = "SELECT * FROM user"
     db_service.cursor.execute(sql)
     rows = db_service.cursor.fetchall()
+
+    db_service.connection.commit()
+
     if rows:
         return [models.User(*row) for row in rows]
 
@@ -267,6 +273,22 @@ def delete_search_query(query_id: int):
     db_service.connection.close()
 
 
+def get_search_query_search_string(query_ids):
+    db_service: DBService = get_connection_cursor()
+    sql = """
+            SELECT id, search_string
+            FROM search_query
+            WHERE id in (?);
+        """
+    query_ids = ",".join(query_ids)
+    db_service.cursor.execute(sql, (query_ids,))
+    rows = db_service.cursor.fetchall()
+
+    db_service.connection.commit()
+
+    return rows
+
+
 # =============== results ===============
 
 
@@ -299,6 +321,22 @@ def get_all_results():
     db_service.cursor.execute(sql)
     rows = db_service.cursor.fetchall()
 
+    db_service.connection.commit()
+
+    return [models.ResultDB(*row) for row in rows]
+
+
+def get_all_results_since(date: datetime.date):
+    db_service: DBService = get_connection_cursor()
+    sql = """
+        SELECT * FROM result
+        WHERE publish_date >= ?
+    """
+
+    db_service.cursor.execute(sql, (date,))
+    rows = db_service.cursor.fetchall()
+
+    db_service.connection.commit()
     return [models.ResultDB(*row) for row in rows]
 
 
