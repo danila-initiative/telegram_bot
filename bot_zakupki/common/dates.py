@@ -66,6 +66,8 @@ def get_now_without_ms():
 
 
 def get_today_date():
+    # example: 2021-08-08
+
     return format_date(datetime.datetime.now())
 
 
