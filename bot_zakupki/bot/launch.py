@@ -17,7 +17,8 @@ if consts.DEBUG:
     logger.add(sys.stdout, level="DEBUG")
 else:
     logger.add(
-        f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="INFO"
+        f"{consts.BOT_LOG_FOLDER}{dates.get_today_date()}.log", level="INFO",
+        rotation="10 MB"
     )
     logger.add(sys.stdout, level="INFO")
 

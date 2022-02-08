@@ -23,7 +23,7 @@ class DBService:
 
 def get_connection_cursor():
     config = models.Config()
-    logger.info(f"path_to_DB: {config.paths.to_db}")
+    # logger.info(f"path_to_DB: {config.paths.to_db}")
     connection = sqlite3.connect(config.paths.to_db)
     cursor = connection.cursor()
 

@@ -19,6 +19,8 @@ smart-format:
 test:
 	bash /app/runtests.sh
 
-enter-rebuild-production-container:
+start-production-container:
 	docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build
+
+enter-rebuild-production-container: start-production-container
 	docker exec -it bot_zakupki_telegram-bot_1 bash
