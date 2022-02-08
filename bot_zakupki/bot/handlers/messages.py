@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 
 from bot_zakupki.bot.handlers import commands
-from bot_zakupki.common import consts
 from bot_zakupki.common import dates
 from bot_zakupki.common import db
 from bot_zakupki.common import models
@@ -48,7 +47,7 @@ CMD_HELP_MSG = (
     "\n"
     "<b>Как с нами связаться?</b>\n "
     "По любым вопросам о работе бота можете писать нам на почту "
-    "zakupki_info@gmail.com"
+    "bot.zakupki@yandex.ru"
 )
 
 CMD_HELP_SUBSCRIPTION_MSG = "Небольшая справка о работе бота"
@@ -57,13 +56,16 @@ CMD_HELP_SUBSCRIPTION_MSG = "Небольшая справка о работе �
 
 
 class CannotAddMoreQueries:
+    config = models.Config()
     TRIAL_PERIOD_LIMIT = (
         "Максимальное количество поисковых запросов "
-        f"в пробный период равно {consts.MAX_QUERIES_IN_TRIAL_PERIOD}."
+        f"в пробный период равно "
+        f"{config.query_limits.max_queries_in_trial_period}."
     )
     COMMON_PERIOD_LIMIT = (
         "К сожалению, нельзя добавить больше, "
-        f"чем {consts.MAX_QUERIES_IN_COMMON_PERIOD} поисковых запросов."
+        f"чем {config.query_limits.max_queries_in_common_period} "
+        f"поисковых запросов."
     )
 
 
@@ -222,7 +224,7 @@ def all_queries_messages_formation(
 
 
 def command_log_formation(command: str, user_id: int):
-    return f"Command `{command}` was used by user {user_id}"
+    return f"user: {user_id}; command: `{command}`"
 
 
 # ==========SUBSCRIPTION==========

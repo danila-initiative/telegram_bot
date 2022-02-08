@@ -11,3 +11,4 @@ pytest-asyncio
 python-dotenv
 requests
 xlsxwriter
+pyyaml

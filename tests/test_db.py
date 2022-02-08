@@ -1,6 +1,5 @@
 import datetime
 
-from bot_zakupki.common import dates
 from bot_zakupki.common import db
 from bot_zakupki.common import models
 
@@ -129,13 +128,11 @@ def test_insert_get_all_results(setup_db):
     rows = db.get_all_results()
     assert len(rows) == 0
 
-    date = dates.res_date_to_datetime("03.07.2021")
-
     result_2 = {
         1: [
             models.Result(
-                publish_date=datetime.datetime(2022, 1, 28, 0, 0),
-                finish_date=datetime.datetime(2022, 2, 4, 0, 0),
+                publish_date=datetime.datetime(2022, 1, 28).date(),
+                finish_date=datetime.datetime(2022, 2, 4, 0, 0).date(),
                 number_of_purchase="№ 0348100089422000001",
                 subject_of_purchase="Оказание услуг по очистке скатной",
                 price=269694,
@@ -143,8 +140,8 @@ def test_insert_get_all_results(setup_db):
                 customer="ГОСУДАРСТВЕННОЕ УЧРЕЖДЕНИЕ",
             ),
             models.Result(
-                publish_date=datetime.datetime(2022, 1, 28, 0, 0),
-                finish_date=datetime.datetime(2022, 2, 4, 0, 0),
+                publish_date=datetime.datetime(2022, 1, 28).date(),
+                finish_date=datetime.datetime(2022, 2, 4, 0, 0).date(),
                 number_of_purchase="№ 0348100089422000001",
                 subject_of_purchase="Оказание услуг по очистке скатной",
                 price=269694,
@@ -160,7 +157,7 @@ def test_insert_get_all_results(setup_db):
     expected_results = [
         models.ResultDB(
             unique_id=1,
-            publish_date=datetime.datetime(2022, 1, 28, 0, 0),
+            publish_date=datetime.datetime(2022, 1, 28),
             finish_date=datetime.datetime(2022, 2, 4, 0, 0),
             number_of_purchase="№ 0348100089422000001",
             subject_of_purchase="Оказание услуг по очистке скатной",
@@ -171,7 +168,7 @@ def test_insert_get_all_results(setup_db):
         ),
         models.ResultDB(
             unique_id=2,
-            publish_date=datetime.datetime(2022, 1, 28, 0, 0),
+            publish_date=datetime.datetime(2022, 1, 28),
             finish_date=datetime.datetime(2022, 2, 4, 0, 0),
             number_of_purchase="№ 0348100089422000001",
             subject_of_purchase="Оказание услуг по очистке скатной",

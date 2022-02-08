@@ -24,9 +24,13 @@ else:
 
 @logger.catch
 async def main():
-    admins_ids = os.getenv("TELEGRAM_ACCESS_ID")[1:-1].split(",")
-    api_token = os.getenv("ADMIN_TELEGRAM_API_TOKEN")
+    admins_ids = os.getenv("TELEGRAM_ACCESS_ID")[1:-1]
+    if not admins_ids:
+        admins_ids = None
+    else:
+        admins_ids = admins_ids.split(",")
 
+    api_token = os.getenv("TELEGRAM_API_TOKEN")
     bot_instance = bot_service.BotService(
         api_token=api_token, admins_ids=admins_ids
     )

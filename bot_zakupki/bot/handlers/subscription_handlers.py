@@ -1,5 +1,6 @@
 # type: ignore
 import datetime
+import os
 
 from aiogram import Dispatcher
 from aiogram import types
@@ -10,34 +11,37 @@ from loguru import logger
 
 from bot_zakupki.bot.handlers import commands
 from bot_zakupki.bot.handlers import messages
+from bot_zakupki.common import consts
 from bot_zakupki.common import dates
 from bot_zakupki.common import db
+from bot_zakupki.common import models
 
-PAYMENTS_PROVIDER_TOKEN = "381764678:TEST:32287"
+PAYMENTS_PROVIDER_TOKEN = os.getenv("PAYMENTS_PROVIDER_TOKEN")
 
-prices = {
-    "30": {
-        "1": 99900,
-        "5": 499900,
-    },
-    "90": {
-        "1": 499900,
-        "5": 1249900,
-    },
-    "180": {
-        "1": 899900,
-        "5": 2149900,
-    },
-}
+# prices = {
+#     "30": {
+#         "1": 99900,
+#         "5": 499900,
+#     },
+#     "90": {
+#         "1": 499900,
+#         "5": 1249900,
+#     },
+#     "180": {
+#         "1": 899900,
+#         "5": 2149900,
+#     },
+# }
 
 
 def get_price(
     days_number: str, queries_number: str
 ) -> list[types.LabeledPrice]:
+    config = models.Config()
     bot_prices = [
         types.LabeledPrice(
-            label="Подписка на сколько дней и запросов",
-            amount=prices[days_number][queries_number],
+            label=f"Подписка на {days_number} дней и {queries_number} запросов",
+            amount=config.price[int(days_number)][int(queries_number)],
         ),
     ]
     return bot_prices
@@ -63,6 +67,11 @@ def register_handlers_subscription(dp: Dispatcher):
 
 async def cmd_update_subscription(message: types.Message, state: FSMContext):
     await state.finish()
+
+    logger.info(
+        messages.command_log_formation(commands.UPDATE_SUBSCRIPTION,
+                                       message.from_user.id)
+    )
 
     answer = messages.subscription_message_formation(message.from_user.id)
 
@@ -99,6 +108,9 @@ async def callback_update_subscription(call: types.CallbackQuery):
     params = call.data.split("_")
     days = params[-2]
     query_numbers = params[-1]
+
+    logger.info(f"user: {call.from_user.id}; pressed button: days {days}, "
+                f"query numbers: {query_numbers}")
 
     if query_numbers == 1:
         postfix = "запрос"
@@ -140,11 +152,7 @@ async def callback_update_subscription(call: types.CallbackQuery):
 
 
 async def checkout(pre_checkout_query: types.PreCheckoutQuery):
-    print(f"pre_checkout_query.as_json():{pre_checkout_query.as_json()}")
-    print(f"pre_checkout_query.bot.id:{pre_checkout_query.bot.id}")
-    print(f"pre_checkout_query.from_user.id:{pre_checkout_query.from_user.id}")
-    print(f"pre_checkout_query.total_amount:{pre_checkout_query.total_amount}")
-    print(f"pre_checkout_query.order_info:{pre_checkout_query.order_info}")
+    logger.info(f"{pre_checkout_query.as_json()}")
 
     await pre_checkout_query.bot.answer_pre_checkout_query(
         pre_checkout_query.id,
@@ -157,10 +165,8 @@ async def checkout(pre_checkout_query: types.PreCheckoutQuery):
 
 # Если платеж прошел успешно
 async def got_payment(message: types.Message):
-    logger.info(
-        f"transaction_id: {message.successful_payment.telegram_payment_charge_id}"
-    )
-    logger.info(f"successful_payment: {message.successful_payment}")
+    logger.info(f"user: {message.from_user.id}; "
+                f"successful_payment: {message.successful_payment}")
 
     payload = message.successful_payment.invoice_payload
     payload = payload.split(",")
@@ -182,9 +188,9 @@ async def got_payment(message: types.Message):
         )
 
     user_data_update = {
-        db.USER_SUBSCRIPTION_LAST_DAY: new_last_sub_day,
-        db.USER_PAYMENT_LAST_DAY: now,
-        db.USER_MAX_NUMBER_OF_QUERIES: int(query_numbers),
+        consts.USER_SUBSCRIPTION_LAST_DAY: new_last_sub_day,
+        consts.USER_PAYMENT_LAST_DAY: now,
+        consts.USER_MAX_NUMBER_OF_QUERIES: int(query_numbers),
     }
     db.update_user_by_user_id(user_id=user_id, column_values=user_data_update)
 

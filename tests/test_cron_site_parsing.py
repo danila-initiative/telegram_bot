@@ -67,8 +67,8 @@ def _set_db_according_data(
         last_sub_day = now + datetime.timedelta(days=days_delta)
 
         user_data_update = {
-            db.USER_SUBSCRIPTION_LAST_DAY: last_sub_day,
-            db.USER_MAX_NUMBER_OF_QUERIES: max_num_of_queries,
+            consts.USER_SUBSCRIPTION_LAST_DAY: last_sub_day,
+            consts.USER_MAX_NUMBER_OF_QUERIES: max_num_of_queries,
         }
         db.update_user_by_user_id(
             user_id=user_id, column_values=user_data_update

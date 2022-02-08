@@ -6,6 +6,7 @@ from aiogram import types
 
 from bot_zakupki.bot.handlers import common_handlers
 from bot_zakupki.bot.handlers import messages
+from bot_zakupki.common import consts
 from bot_zakupki.common import db
 
 TELEGRAM_ID_1 = 11111
@@ -99,7 +100,7 @@ async def test_show_all_my_queries(setup_db, get_message):
     db.insert_new_user(str(TELEGRAM_ID_1))
     last_sub_day = datetime.datetime(2023, 12, 19, 16, 21, 12)
     user_data_update = {
-        db.USER_SUBSCRIPTION_LAST_DAY: last_sub_day,
+        consts.USER_SUBSCRIPTION_LAST_DAY: last_sub_day,
     }
     db.update_user_by_user_id(
         user_id=str(TELEGRAM_ID_1), column_values=user_data_update
