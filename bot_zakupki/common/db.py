@@ -13,14 +13,6 @@ from bot_zakupki.common import consts
 from bot_zakupki.common import dates
 from bot_zakupki.common import models
 
-USER_USER_ID = "user_id"
-USER_FIRST_BOT_START_DATE = "first_bot_start_date"
-USER_BOT_START_DATE = "bot_start_date"
-USER_BOT_IS_ACTIVE = "bot_is_active"
-USER_SUBSCRIPTION_LAST_DAY = "subscription_last_day"
-USER_PAYMENT_LAST_DAY = "payment_last_day"
-USER_MAX_NUMBER_OF_QUERIES = "max_number_of_queries"
-
 
 # ===============Common===============
 @dataclass
@@ -29,27 +21,23 @@ class DBService:
     cursor: sqlite3.Cursor
 
 
-def get_connection_cursor(
-    path_to_db: str = consts.PATH_TO_DB,
-):
-    test = os.getenv("TEST")
-    if test:
-        path_to_db = consts.PATH_TO_TEST_DB
-    logger.debug(f"path to db: {path_to_db}")
-    connection = sqlite3.connect(path_to_db)
+def get_connection_cursor():
+    config = models.Config()
+    # logger.info(f"path_to_DB: {config.paths.to_db}")
+    connection = sqlite3.connect(config.paths.to_db)
     cursor = connection.cursor()
-    logger.debug("Connection and Cursor to SQLite DB successful")
 
     return DBService(connection=connection, cursor=cursor)
 
 
-def init_db(
-    path_to_migrations: str = consts.PATH_TO_MIGRATIONS,
-):
+def init_db():
     db_service: DBService = get_connection_cursor()
+    config = models.Config()
     """Инициализирует БД"""
-    migrations = os.listdir(path_to_migrations)
-    migrations = [os.path.join(path_to_migrations, mig) for mig in migrations]
+    migrations = os.listdir(config.paths.to_migrations)
+    migrations = [
+        os.path.join(config.paths.to_migrations, mig) for mig in migrations
+    ]
     logger.info(f"migrations: {migrations}")
     for migration in migrations:
         with open(migration, "r") as f:
@@ -151,10 +139,10 @@ def imitate_trial_period_end(
     date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(
         days=1
     )
-    logger.debug(f"New {USER_SUBSCRIPTION_LAST_DAY}: {date}")
+    logger.debug(f"New {consts.USER_SUBSCRIPTION_LAST_DAY}: {date}")
     db_service.cursor.execute(
-        f"UPDATE user SET {USER_SUBSCRIPTION_LAST_DAY} = ? "
-        f"WHERE {USER_USER_ID} = {user_id}",
+        f"UPDATE user SET {consts.USER_SUBSCRIPTION_LAST_DAY} = ? "
+        f"WHERE {consts.USER_USER_ID} = {user_id}",
         (date,),
     )
     db_service.connection.commit()

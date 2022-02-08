@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  telegram-bot:
+    build: .
+    restart: always
+    command: bash entrypoint.sh
+    volumes:
+      - ./bot_zakupki:/app/bot_zakupki
+      - ./crons:/app/crons
+      - ./tests:/app/tests
+      - ./db:/app/db
+      - ./logs:/app/logs
+      - ./htmlcov:/app/htmlcov
+    env_file:
+      - .env_prod

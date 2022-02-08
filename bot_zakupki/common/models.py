@@ -1,18 +1,13 @@
 import dataclasses
 import datetime
+import os
 import typing
 from enum import Enum
 
-from bot_zakupki.common import dates
+import yaml
 
-RESULT_PUBLISH_DATE = "publish_date"
-RESULT_FINISH_DATE = "finish_date"
-RESULT_NUMBER_OF_PURCHASE = "number_of_purchase"
-RESULT_SUBJECT_OF_PURCHASE = "subject_of_purchase"
-RESULT_PRICE = "price"
-RESULT_LINK = "link"
-RESULT_CUSTOMER = "customer"
-RESULT_QUERY_ID = "query_id"
+from bot_zakupki.common import consts
+from bot_zakupki.common import dates
 
 
 class Region:
@@ -147,14 +142,14 @@ class Result:
     @staticmethod
     def get_result_columns_name() -> tuple:
         return (
-            RESULT_PUBLISH_DATE,
-            RESULT_FINISH_DATE,
-            RESULT_NUMBER_OF_PURCHASE,
-            RESULT_SUBJECT_OF_PURCHASE,
-            RESULT_PRICE,
-            RESULT_LINK,
-            RESULT_CUSTOMER,
-            RESULT_QUERY_ID,
+            consts.RESULT_PUBLISH_DATE,
+            consts.RESULT_FINISH_DATE,
+            consts.RESULT_NUMBER_OF_PURCHASE,
+            consts.RESULT_SUBJECT_OF_PURCHASE,
+            consts.RESULT_PRICE,
+            consts.RESULT_LINK,
+            consts.RESULT_CUSTOMER,
+            consts.RESULT_QUERY_ID,
         )
 
 
@@ -238,3 +233,86 @@ class RequestParameters:
         search_string = "+".join(search_list)
 
         return search_string
+
+
+# ========== Config ==========
+@dataclasses.dataclass()
+class QueryLimitsConf:
+    max_queries_in_trial_period: int
+    max_queries_in_common_period: int
+
+
+@dataclasses.dataclass()
+class SearchParametersConf:
+    base_url: str
+    publish_delts: int
+    close_delta: int
+
+
+@dataclasses.dataclass()
+class PathsConf:
+    to_migrations: str
+    to_price_table: str
+    to_bot_logs: str
+    to_cron_logs: str
+    to_db: str
+
+
+@dataclasses.dataclass()
+class Config:
+    email_support: str
+    trial_period_days: int
+    query_limits: QueryLimitsConf
+    search_parameters: SearchParametersConf
+    paths: PathsConf
+    price: dict
+
+    def __init__(self):
+        with open("bot_zakupki/config.yaml", "r") as file:
+            config = yaml.safe_load(file)
+        self.email_support = config["email_support"]
+        self.trial_period_days = config["trial_period_days"]
+
+        query_limits = config["query_limits"]
+        self.query_limits = QueryLimitsConf(
+            max_queries_in_trial_period=query_limits[
+                "max_queries_in_trial_period"
+            ],
+            max_queries_in_common_period=query_limits[
+                "max_queries_in_common_period"
+            ],
+        )
+
+        search_parameters = config["search_parameters"]
+        self.search_parameters = SearchParametersConf(
+            base_url=search_parameters["base_url"],
+            publish_delts=search_parameters["base_url"],
+            close_delta=search_parameters["close_delta"],
+        )
+
+        paths = config["paths"]
+        self.paths = PathsConf(
+            to_migrations=paths["to_migrations"],
+            to_price_table=paths["to_price_table"],
+            to_bot_logs=paths["to_bot_logs"],
+            to_cron_logs=paths["to_cron_logs"],
+            to_db=paths["to_db"],
+        )
+        self._correct_path_to_db(config)
+
+        self._set_price(config)
+
+    def _correct_path_to_db(self, config):
+        test = os.getenv("TEST")
+        if test in ["True", "true"]:
+            paths = config["testing"]["paths"]
+            self.paths.to_bot_logs = paths["to_bot_logs"]
+            self.paths.to_cron_logs = paths["to_cron_logs"]
+            self.paths.to_db = paths["to_db"]
+
+    def _set_price(self, config):
+        debug = os.getenv("DEBUG")
+        if debug in ["False", "false"]:
+            self.price = config["production"]["price"]
+        else:
+            self.price = config["debugging"]["price"]

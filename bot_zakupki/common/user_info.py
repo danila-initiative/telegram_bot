@@ -51,7 +51,10 @@ class UserInfo:
         if not self._active:
             logger.info(f"user {self.user_id} was not active")
             now = dates.get_now_without_ms()
-            data = {db.USER_BOT_START_DATE: now, db.USER_BOT_IS_ACTIVE: 1}
+            data = {
+                consts.USER_BOT_START_DATE: now,
+                consts.USER_BOT_IS_ACTIVE: 1,
+            }
             db.update_user_by_user_id(user_id=self.user_id, column_values=data)
             return
 
@@ -89,14 +92,20 @@ class UserInfo:
             f"search_queries: {len(search_queries)}"
         )
 
+        config = models.Config()
+        max_queries_in_common_period = \
+            config.query_limits.max_queries_in_common_period
+        max_queries_in_trial_period = \
+            config.query_limits.max_queries_in_trial_period
+
         if self.trial_state == models.TrialPeriodState.HAS_NOT_STARTED:
             self.can_add_request = True
         elif self.trial_state == models.TrialPeriodState.TRIAL_PERIOD:
-            if len(search_queries) < consts.MAX_QUERIES_IN_TRIAL_PERIOD:
+            if len(search_queries) < max_queries_in_trial_period:
                 self.can_add_request = True
         elif (
             self.trial_state == models.TrialPeriodState.IS_OVER
-            and len(search_queries) < consts.MAX_QUERIES_IN_COMMON_PERIOD
+            and len(search_queries) < max_queries_in_common_period
         ):
             self.can_add_request = True
 

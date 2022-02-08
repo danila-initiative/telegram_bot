@@ -200,14 +200,16 @@ async def process_max_price(message: types.Message, state: FSMContext):
     user = user_info.UserInfo(user_id)
     now = dates.get_current_time_for_db()
 
+    config = models.Config()
+
     # пробный период не начался
     # добавляем дату окончания пробного периода
     if user.trial_state == models.TrialPeriodState.HAS_NOT_STARTED:
-        last_sub_day = now + datetime.timedelta(days=consts.TRIAL_PERIOD_DAYS)
+        last_sub_day = now + datetime.timedelta(days=config.trial_period_days)
 
         user_data_update = {
-            db.USER_SUBSCRIPTION_LAST_DAY: last_sub_day,
-            db.USER_MAX_NUMBER_OF_QUERIES: consts.MAX_QUERIES_IN_TRIAL_PERIOD,
+            consts.USER_SUBSCRIPTION_LAST_DAY: last_sub_day,
+            consts.USER_MAX_NUMBER_OF_QUERIES: config.query_limits.max_queries_in_trial_period,
         }
         db.update_user_by_user_id(
             user_id=user_id, column_values=user_data_update

@@ -1,3 +1,4 @@
+# type: ignore
 import typing
 
 import pandas as pd
@@ -91,3 +92,7 @@ def save_df_to_excel(df: pd.DataFrame, file_name: str):
     worksheet.set_column("E:E", 100, link_format)
 
     writer.save()
+
+
+if __name__ == "__main__":
+    print(models.Config())

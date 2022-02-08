@@ -39,7 +39,6 @@ from bot_zakupki.common import parser
             "3",
             id="3",
         ),
-
     ),
 )
 def test_parser_page(expected_result, id_name):

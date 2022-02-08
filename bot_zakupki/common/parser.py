@@ -9,7 +9,6 @@ from loguru import logger
 from requests import Response
 
 from bot_zakupki.bot.handlers import messages
-from bot_zakupki.common import consts
 from bot_zakupki.common import dates
 from bot_zakupki.common import models
 
@@ -54,7 +53,9 @@ def request_formation(custom_params: models.RequestParameters) -> str:
         params_.append(key + "=" + value)
     params_combined = "&".join(params_)
 
-    return consts.BASE_URL + params_combined
+    config = models.Config()
+
+    return config.search_parameters.base_url + params_combined
 
 
 @logger.catch
