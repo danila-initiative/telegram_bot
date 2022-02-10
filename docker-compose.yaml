@@ -4,7 +4,7 @@ services:
   telegram-bot:
     build: .
     restart: always
-    command: bash entrypoint.sh
+    command: bash entrypoint_testing.sh
     volumes:
       - ./bot_zakupki:/app/bot_zakupki
       - ./crons:/app/crons

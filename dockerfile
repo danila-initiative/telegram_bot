@@ -24,6 +24,7 @@ RUN touch /var/log/cron.log
 # Запускалка тестов
 COPY ./runtests.sh ./runtests.sh
 COPY ./entrypoint.sh ./entrypoint.sh
+COPY ./entrypoint_testing.sh ./entrypoint_testing.sh
 
 COPY ./Makefile ./Makefile
 

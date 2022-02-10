@@ -1,5 +1,5 @@
 start-container-rebuild:
-	docker-compose up -d --build
+	docker-compose up --build
 
 start-container-demon:
 	docker-compose up -d
