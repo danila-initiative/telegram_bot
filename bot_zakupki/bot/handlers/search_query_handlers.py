@@ -65,6 +65,11 @@ def register_handlers_search_query(dp: Dispatcher):
 async def new_query(message: types.Message, state: FSMContext):
     await state.finish()
 
+    logger.info(
+        messages.command_log_formation(commands.ADD_NEW_QUERY,
+                                       message.from_user.id)
+    )
+
     user_id = message.from_user.id
 
     try:
