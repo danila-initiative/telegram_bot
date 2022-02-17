@@ -47,9 +47,7 @@ async def cmd_start_func(
 ) -> tuple[str, types.ReplyKeyboardRemove]:
     user_id = message.from_user.id
 
-    logger.info(
-        messages.command_log_formation(commands.START, user_id)
-    )
+    logger.info(messages.command_log_formation(commands.START, user_id))
     user = user_info.UserInfo(user_id=user_id)
     user.create_or_mark_active()
 
@@ -86,8 +84,9 @@ async def cmd_show_all_my_queries_func(
     user_id = message.from_user.id
 
     logger.info(
-        messages.command_log_formation(commands.SHOW_ALL_MY_QUERIES,
-                                       message.from_user.id)
+        messages.command_log_formation(
+            commands.SHOW_ALL_MY_QUERIES, message.from_user.id
+        )
     )
 
     queries = db.get_all_search_queries_by_user_id(user_id)

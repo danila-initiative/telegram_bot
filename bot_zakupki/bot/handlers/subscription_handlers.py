@@ -69,8 +69,9 @@ async def cmd_update_subscription(message: types.Message, state: FSMContext):
     await state.finish()
 
     logger.info(
-        messages.command_log_formation(commands.UPDATE_SUBSCRIPTION,
-                                       message.from_user.id)
+        messages.command_log_formation(
+            commands.UPDATE_SUBSCRIPTION, message.from_user.id
+        )
     )
 
     answer = messages.subscription_message_formation(message.from_user.id)
@@ -109,8 +110,10 @@ async def callback_update_subscription(call: types.CallbackQuery):
     days = params[-2]
     query_numbers = params[-1]
 
-    logger.info(f"user: {call.from_user.id}; pressed button: days {days}, "
-                f"query numbers: {query_numbers}")
+    logger.info(
+        f"user: {call.from_user.id}; pressed button: days {days}, "
+        f"query numbers: {query_numbers}"
+    )
 
     if query_numbers == 1:
         postfix = "запрос"
@@ -165,8 +168,10 @@ async def checkout(pre_checkout_query: types.PreCheckoutQuery):
 
 # Если платеж прошел успешно
 async def got_payment(message: types.Message):
-    logger.info(f"user: {message.from_user.id}; "
-                f"successful_payment: {message.successful_payment}")
+    logger.info(
+        f"user: {message.from_user.id}; "
+        f"successful_payment: {message.successful_payment}"
+    )
 
     payload = message.successful_payment.invoice_payload
     payload = payload.split(",")

@@ -66,7 +66,7 @@ def test_parser_page(expected_result, id_name):
             "лифт",
             10000,
             2000000,
-            "Москва",
+            "Москва и Московская область",
             "01.09.2021",
             "03.09.2021",
             "08.09.2021",
@@ -78,7 +78,7 @@ def test_parser_page(expected_result, id_name):
             " современная школа ",
             10000,
             20000000,
-            "Москва",
+            "Москва и Московская область",
             "01.09.2021",
             "03.09.2021",
             "08.09.2021",
@@ -90,7 +90,7 @@ def test_parser_page(expected_result, id_name):
             " Эскалатор ",
             10000,
             20000000,
-            "Москва",
+            "Москва и Московская область",
             "01.09.2021",
             None,
             None,
@@ -102,7 +102,7 @@ def test_parser_page(expected_result, id_name):
             "Мне повезёт",
             10000,
             20000000,
-            "Москва",
+            "Москва и Московская область",
             "01.09.2021",
             None,
             None,
@@ -140,4 +140,6 @@ def test_request_formation(
         "r",
     ) as file:
         expected = file.readline()
+        print(f"url: {url}")
+        print(f"exp: {expected}")
         assert expected == url
