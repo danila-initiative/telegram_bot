@@ -93,10 +93,12 @@ class UserInfo:
         )
 
         config = models.Config()
-        max_queries_in_common_period = \
+        max_queries_in_common_period = (
             config.query_limits.max_queries_in_common_period
-        max_queries_in_trial_period = \
+        )
+        max_queries_in_trial_period = (
             config.query_limits.max_queries_in_trial_period
+        )
 
         if self.trial_state == models.TrialPeriodState.HAS_NOT_STARTED:
             self.can_add_request = True

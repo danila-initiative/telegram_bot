@@ -11,8 +11,7 @@ from bot_zakupki.common import dates
 
 
 class Region:
-    MOSCOW = "Москва"
-    MOSCOW_REGION = "Московская область"
+    MOSCOW_MOSCOW_REGION = "Москва и Московская область"
     FAR_EASTERN_FEDERAL_DISTRICT = "Дальневосточный федеральный округ"
     VOLGA_FEDERAL_DISTRICT = "Приволжский федеральный округ"
     NORTHWESTERN_FEDERAL_DISTRICT = "Северо-Западный федеральный округ"
@@ -24,8 +23,7 @@ class Region:
 
 
 CUSTOMER_PLACES = {
-    Region.MOSCOW: "5277335",
-    Region.MOSCOW_REGION: "5277327",
+    Region.MOSCOW_MOSCOW_REGION: "5277335%2C5277327",
     Region.FAR_EASTERN_FEDERAL_DISTRICT: "5277399",
     Region.VOLGA_FEDERAL_DISTRICT: "5277362",
     Region.NORTHWESTERN_FEDERAL_DISTRICT: "5277336",
@@ -220,7 +218,8 @@ class RequestParameters:
             "searchString": self.prepare_search_string(self.search_string),
             "priceFromGeneral": str(self.min_price),
             "priceToGeneral": str(self.max_price),
-            "customerPlace": CUSTOMER_PLACES.get(self.place_name),
+            # "customerPlace": CUSTOMER_PLACES.get(self.place_name),
+            "delKladrIds": CUSTOMER_PLACES.get(self.place_name),
             "publishDateFrom": self.publish_date_from,
             "publishDateTo": self.publish_date_to,
             "applSubmissionCloseDateFrom": self.close_date_from,

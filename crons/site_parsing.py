@@ -1,6 +1,3 @@
-import random
-import time
-
 from bs4 import BeautifulSoup as BS
 from loguru import logger
 
@@ -30,24 +27,25 @@ def start_parsing():
     for query in active_queries:
         # Формируем url для запроса
         url = _format_request(query=query, publish_date=publish_date)
+        print(f"url: {url}")
         logger.debug(f"query_id: {query.unique_id}; url: {url}")
 
         page = parser.get_page_by_url(url)
 
-        result = parser.parse_result_page(
-            page=page, search_string=query.search_string
-        )
-
-        if result is None:
-            logger.info(f"There is no results for query {query.unique_id} "
-                        f"at {publish_date}")
-            continue
-
-        results[query.unique_id] = result
-
-        time.sleep(random.randint(3, 10))
-
-    db.insert_results(column_values=results)
+    #     result = parser.parse_result_page(
+    #         page=page, search_string=query.search_string
+    #     )
+    #
+    #     if result is None:
+    #         logger.info(f"There is no results for query {query.unique_id} "
+    #                     f"at {publish_date}")
+    #         continue
+    #
+    #     results[query.unique_id] = result
+    #
+    #     time.sleep(random.randint(3, 10))
+    #
+    # db.insert_results(column_values=results)
 
     logger.info(f"Cron task {__file__} is finished.")
 

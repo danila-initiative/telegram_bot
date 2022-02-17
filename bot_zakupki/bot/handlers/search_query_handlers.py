@@ -66,8 +66,9 @@ async def new_query(message: types.Message, state: FSMContext):
     await state.finish()
 
     logger.info(
-        messages.command_log_formation(commands.ADD_NEW_QUERY,
-                                       message.from_user.id)
+        messages.command_log_formation(
+            commands.ADD_NEW_QUERY, message.from_user.id
+        )
     )
 
     user_id = message.from_user.id
@@ -214,7 +215,8 @@ async def process_max_price(message: types.Message, state: FSMContext):
 
         user_data_update = {
             consts.USER_SUBSCRIPTION_LAST_DAY: last_sub_day,
-            consts.USER_MAX_NUMBER_OF_QUERIES: config.query_limits.max_queries_in_trial_period,
+            consts.USER_MAX_NUMBER_OF_QUERIES:
+                config.query_limits.max_queries_in_trial_period,
         }
         db.update_user_by_user_id(
             user_id=user_id, column_values=user_data_update
